@@ -1,8 +1,9 @@
 "use client"
 import React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link';
 import axios from 'axios';
+import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
@@ -12,7 +13,17 @@ import { signIn } from 'next-auth/react';
 
 const Signup = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
 
+    useEffect(() => {
+        const callbackerror = searchParams.get("error");
+        console.log(callbackerror)
+        
+
+        if (callbackerror === "OAuthSignin") {
+            alert("whoops, there may already be an account with that email");
+        }
+    }, [searchParams]);
     const [data, setData] = useState({
         email: "",
         name: "",

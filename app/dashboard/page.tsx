@@ -4,10 +4,13 @@ import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 
 const page = () => {
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
 
     console.log(session);
     
+    if (status === "loading") return <p>Loading...</p>;
+    if (!session) return <p>No active session</p>;
+
 
     const handleSignOut = async () => {
         await signOut({ callbackUrl: '/' });

@@ -36,7 +36,8 @@ const Signin = () => {
             });
             window.location.href = "/dashboard";
         } else {
-            alert("failed to login")
+            alert(result?.error)
+            // alert("failed to login")
         }
       }
   return (

@@ -72,35 +72,42 @@ export const authOptions: NextAuthOptions = {
       }),
     ],
     callbacks: {
-      async signIn({ account, profile }) {
-        if (!profile?.email) {
-          throw new Error("No email found");
+      async signIn({ user, account, profile }) {
+        if (account && account.provider === "google") {
+
+          if (!profile || !profile.email) {
+            // Handle missing profile or email
+            console.error("Profile or email is missing");
+            return false; // Prevent sign-in
+          }
+
+          try {
+            await prisma.user.upsert({
+              where: {email: profile.email},
+              update: {
+                name: profile.name,
+              },
+              create: {
+                email: profile.email,
+                name: profile.name,
+                userName: profile.name,
+              },
+            })
+          } catch (error) {
+            
+          }
+
+          // const googleProfile = profile as { email_verified?: boolean };
+          // if (googleProfile?.email_verified) {
+          //   return true
+          // } else {
+          //   throw new Error("Email not verified.");
+          // }
         }
-        console.log(profile);
-        
-        await prisma.user.upsert({
-          where: {
-            email: profile.email,
-          },
-          create: {
-            email: profile.email,
-            name: profile.name,
-            userName: profile.name,
-            // password: await bcrypt.hash(profile.password, 10),
-          },
-          update: {
-            email: profile.email,
-            name: profile.name,
-            userName: profile.name,
-            // password: await bcrypt.hash(profile.password, 10),
-          },
-
-
-        })
         return true // Do different verification for other providers that don't have `email_verified`
       },
-
-    }
+    },
+    debug: true
     // debug: process.env.NODE_ENV === "development",
   };
   
