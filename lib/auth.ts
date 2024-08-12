@@ -5,7 +5,6 @@ import bcrypt from "bcrypt";
 import GoogleProvider from "next-auth/providers/google";
 import  CredentialsProvider  from "next-auth/providers/credentials";
 
-
 export const authOptions: NextAuthOptions = {
     pages: {
       signIn: "/auth/signin",
@@ -32,7 +31,12 @@ export const authOptions: NextAuthOptions = {
         credentials: {
           email: { label: "Email", type: "text", placeholder: "jsmith" },
           password: { label: "Password", type: "password" },
-          username: {
+          name: {
+            label: "Name",
+            type: "text",
+            placeholder: "John Smith",
+          },
+          userName: {
             label: "Username",
             type: "text",
             placeholder: "John Smith",
@@ -96,16 +100,23 @@ export const authOptions: NextAuthOptions = {
           } catch (error) {
             
           }
-
-          // const googleProfile = profile as { email_verified?: boolean };
-          // if (googleProfile?.email_verified) {
-          //   return true
-          // } else {
-          //   throw new Error("Email not verified.");
-          // }
         }
         return true // Do different verification for other providers that don't have `email_verified`
       },
+      // async jwt({ token, user }) {
+      //   if (user) {
+      //     token.id = user.id;
+      //     token.userName = user.userName;
+      //   }
+      //   return token;
+      // },
+      // async session({ session, token }) {
+      //   if (token) {
+      //     session.user.id = token.id as string;
+      //     session.user.userName = token.userName as string | null;
+      //   }
+      //   return session;
+      // }
     },
     debug: true
     // debug: process.env.NODE_ENV === "development",
