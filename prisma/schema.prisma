@@ -19,6 +19,7 @@ model User {
   password      String?
   userName      String?
   image         String?
+  profileCompleted Boolean   @default(false)
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())

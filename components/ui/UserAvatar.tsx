@@ -1,5 +1,7 @@
 import React from 'react';
 import { signOut } from 'next-auth/react';
+import { LogOut } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import {
     DropdownMenu,
@@ -11,6 +13,7 @@ import {
   } from "@/components/ui/dropdown-menu"
   import { Button } from './button'
 const UserAvatar = () => {
+    const { data: session, status } = useSession()
   return (
     <DropdownMenu>
   <DropdownMenuTrigger>
@@ -19,14 +22,32 @@ const UserAvatar = () => {
    <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   </DropdownMenuTrigger>
-  <DropdownMenuContent className='min-w-[13rem] mr-4'>
-    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+  <DropdownMenuContent className='min-w-[18rem] mr-4'>
+
+    <DropdownMenuLabel className="py-4 flex items-center justify-start gap-4">
+    <Avatar>
+    <AvatarImage src="https://github.com/shadcn.png" />
+   <AvatarFallback>CN</AvatarFallback>
+    </Avatar> 
+        <div>
+        {session?.user && (
+            <div>
+                 <p className="text-white">{session.user.name}</p>
+                 <p className="text-white">{session.user.email}</p>
+            </div>
+        )}
+        </div>
+    </DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuItem>Profile</DropdownMenuItem>
     <DropdownMenuItem>Billing</DropdownMenuItem>
     <DropdownMenuItem>Team</DropdownMenuItem>
+    <DropdownMenuSeparator />
     <DropdownMenuItem>
-     <Button onClick={() => signOut({callbackUrl: "/"})} className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600"> Sign Out</Button>
+     <Button size="sm" onClick={() => signOut({callbackUrl: "/"})} className="w-full bg-transparent justify-start hover:bg-transparent text-white tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring "> 
+     <LogOut className="mr-2 h-4 w-4" />
+        Sign Out
+        </Button>
     </DropdownMenuItem>
   </DropdownMenuContent>
 </DropdownMenu>
