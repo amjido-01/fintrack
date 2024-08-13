@@ -20,6 +20,8 @@ model User {
   userName      String?
   image         String?
   profileCompleted Boolean   @default(false)
+  firstName     String?
+  lastName      String?
   accounts      Account[]
   sessions      Session[]
   createdAt     DateTime  @default(now())
