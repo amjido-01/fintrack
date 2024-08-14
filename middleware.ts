@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/lib/session"
 
-const protectedRoutes = ["/dashboard", "/profile"]
+const protectedRoutes = ["/dashboard", "/profile", "auth/setting"]
 const publicRoutes = ["/auth/signin", "/auth/signup", "/"] 
 
 export default async function middleware(req: NextRequest) {
