@@ -24,6 +24,7 @@ const Signin = () => {
       const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true)
+
         const result = await signIn('credentials', {
             redirect: false,
             email,
@@ -36,7 +37,15 @@ const Signin = () => {
                 email: "",
                 password: "",
             });
-            window.location.href = "/dashboard";
+
+            const profileResponse = await fetch(`/api/check-profile?userEmail=${email}`);
+            const profileData = await profileResponse.json();
+
+            if (profileData.profileCompleted) {
+                window.location.href = "/dashboard"
+            } else {
+                window.location.href = "/auth/setting"
+            }
         } else {
             alert("Incorrect email or password")
             setLoading(false)
