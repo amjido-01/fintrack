@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { decrypt } from "@/lib/session"
 
-const protectedRoutes = ["/dashboard"]
-const publicRoutes = ["/signin", "signup", "/"] 
+const protectedRoutes = ["/dashboard", "/profile"]
+const publicRoutes = ["/auth/signin", "/auth/signup", "/"] 
 
 export default async function middleware(req: NextRequest) {
     const path = req.nextUrl.pathname;
@@ -17,7 +17,9 @@ export default async function middleware(req: NextRequest) {
       }
 
     if (isPublic && session && !req.nextUrl.pathname.startsWith('/dashboard')) {
-        return NextResponse.redirect(new URL("/dashboard", req.nextUrl))
+        const res = NextResponse.redirect(new URL("/dashboard", req.nextUrl))
+        res.cookies.set("prev-url", encodeURIComponent(path), { path: '/' });
+        return res
     }
 
     return NextResponse.next()

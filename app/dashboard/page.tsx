@@ -1,16 +1,30 @@
 "use client";
 import React from 'react';
 import { useSession } from "next-auth/react";
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+
 const page = () => {
     const { data: session, status } = useSession();
+    const [showWelcomePopup, setShowWelcomePopup] = useState(false);
     const router = useRouter();
     console.log(session, "from dashboard");
 
     useEffect(() => {
       if (status === "authenticated" && session?.user) {
-        console.log(session.user.id);
+
+        const prevUrl = decodeURIComponent(document.cookie
+          .split('; ')
+          .find(row => row.startsWith('prev-url='))
+          ?.split('=')[1] || '');
+
+      console.log(prevUrl);  // For debugging
+
+      if (prevUrl === "/auth/setting") {
+          setShowWelcomePopup(true);
+      }
+
         fetch(`/api/check-profile?userEmail=${session.user.email}`)
           .then((res) => {
             if (!res.ok) {
@@ -36,6 +50,10 @@ const page = () => {
     console.log(session.user)
   return (
     <div>
+      {showWelcomePopup && (  <div className="welcome-banner border-2 border-red-500 text-2xl">
+                    Welcome back! You just completed your profile setup.
+        </div>)}
+
         {session?.user && (
             <div>
                  <p className="text-3xl text-white">Welcome, {session.user.name}</p>
