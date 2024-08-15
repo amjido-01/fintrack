@@ -103,13 +103,14 @@ export const authOptions: NextAuthOptions = {
         }
         return true // Do different verification for other providers that don't have `email_verified`
       },
+      // get the user first from the jwt and then from the database
       async jwt({ token, user }) {
         if (user?.id) {
           token.id = user.id
         }
         return token;
       },
-      async session({session, user, token}){
+      async session({session, token}){
         session.user.id = token.id as string;
         return session;
       }

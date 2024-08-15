@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     try {
       const session = await getServerSession(authOptions);
       console.log(session)
-      if (!session?.user?.email) {
+      if (!session?.user?.id) {
         return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
       }
   
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
   
       await prisma.user.update({
         where: {
-          email: session.user.email,
+          id: session.user.id,
         },
         data: {
           firstName,

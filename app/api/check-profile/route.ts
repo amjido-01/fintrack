@@ -4,15 +4,16 @@ import { prisma } from '@/lib/prismaDB'; // Ensure this path is correct
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
-        const userEmail = searchParams.get('userEmail');
+        const userId = searchParams.get('id');
+        
 
-        if (!userEmail) {
+        if (!userId) {
             return NextResponse.json({ error: 'User email is required' }, { status: 400 });
         }
 
         const user = await prisma.user.findUnique({
             where: {
-                email: userEmail,
+                id: userId,
             },
             select: {
                 profileCompleted: true,
