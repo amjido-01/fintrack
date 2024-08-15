@@ -1,24 +1,34 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prismaDB";
+import { z } from "zod";
 
-export async function handler(req: NextApiRequest, res: NextApiResponse) {
-   
-    const { workspaceName, userId } = req.body;
+// Zod schema for validating the request data
+const workspaceSchema = z.object({
+  workspaceName: z.string().min(1, "Workspace name is required"),
+  //userId: z.string().min(1, "User ID is required"),
+});
 
-    if(!workspaceName){
-        return res.status(400).json({
-            message: "workspace name is required",
-            error: true
-        })
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { workspaceName } = workspaceSchema.parse(body);
+
+    // Create the workspace in the database
+    const result = await prisma.workspace.create({
+      data: {
+        workspaceName,
+        createdById: userId,
+      },
+    });
+
+    // Return the newly created workspace
+    return NextResponse.json(result, { status: 201 });
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return NextResponse.json({ error: err.errors }, { status: 400 });
     }
 
-    try {
-        const result = await prisma.workspace.create({
-            data: {
-                workspaceName,
-                createdById: userId
-            }
-        })
-        console.log(result, "result from workspace")
-        return res.status(200).json(result);
-    }
+    console.error('Error creating workspace:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

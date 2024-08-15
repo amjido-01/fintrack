@@ -103,20 +103,16 @@ export const authOptions: NextAuthOptions = {
         }
         return true // Do different verification for other providers that don't have `email_verified`
       },
-      // async jwt({ token, user }) {
-      //   if (user) {
-      //     token.id = user.id;
-      //     token.userName = user.userName;
-      //   }
-      //   return token;
-      // },
-      // async session({ session, token }) {
-      //   if (token) {
-      //     session.user.id = token.id as string;
-      //     session.user.userName = token.userName as string | null;
-      //   }
-      //   return session;
-      // }
+      async jwt({ token, user }) {
+        if (user?.id) {
+          token.id = user.id
+        }
+        return token;
+      },
+      async session({session, user, token}){
+        session.user.id = token.id as string;
+        return session;
+      }
     },
     debug: true
     // debug: process.env.NODE_ENV === "development",

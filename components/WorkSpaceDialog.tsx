@@ -15,47 +15,41 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
+// Define Zod schema
 const schema = z.object({
   workspaceName: z.string().min(1).max(50),
+  //userId: z.string().min(1), // Ensure that userId is required
 });
 
 type Inputs = z.infer<typeof schema>;
 
 const WorkSpaceDialog = () => {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<Inputs>({workspaceName: ''});
+   const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<Inputs>({ workspaceName: '' });
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
 
-  const {workspaceName} = data;
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const handleChange =  (e: React.ChangeEvent<HTMLInputElement>) => {
-    setData({...data, [e.target.name]: e.target.value});
-  }
+    try {
+      // Validate data with Zod
+      schema.parse(data);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setLoading(true);
+      await axios.post('/api/workspace', data);
 
-      if(!workspaceName) {
-         alert('Please enter a workspace name');
-         return;
-      }
-
-      axios.post('/api/workspace', {
-          workspaceName,
-      }).then(() => {
-         setLoading(false);
-         setData({workspaceName: ''});
-         alert('Workspace created successfully');
-      }).catch(() => {
-         setLoading(false);
-         setData({workspaceName: ''});
-         alert('Workspace creation failed');
-      })
-
-     
-  }
-    
+      setLoading(false);
+      setData({ workspaceName: '' });
+      alert('Workspace created successfully');
+    } catch (err) {
+      setLoading(false);
+      alert('Workspace creation failed');
+      console.error(err);
+    }
+  };
 
 
 
