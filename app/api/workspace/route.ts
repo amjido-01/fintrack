@@ -21,6 +21,23 @@ export async function POST(req: NextRequest) {
 
     const userId = session?.user?.id;
 
+    // check if workspace already exists
+    const existingWorkspace = await prisma.workspace.findFirst({
+      where: {
+        workspaceName,
+        createdById: userId
+      },
+    });
+
+    if (existingWorkspace) {
+      return NextResponse.json({
+        error: "Workspace already exists",
+      }, { status: 400 });
+    }
+    
+
+
+
     // Create the workspace in the database
     const result = await prisma.workspace.create({
       data: {

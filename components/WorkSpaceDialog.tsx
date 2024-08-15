@@ -23,6 +23,8 @@ const WorkSpaceDialog = () => {
 
    const [loading, setLoading] = useState(false);
    const [workspaceName, setWorkspaceName] = useState('');
+   const [error, setError] = useState('');
+   const [open, setOpen] = useState(false);
 
    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWorkspaceName(e.target.value);
@@ -31,24 +33,37 @@ const WorkSpaceDialog = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
     try {
-      await axios.post('/api/workspace', {
+      const response = await axios.post('/api/workspace', {
         workspaceName,
-      })
-      setWorkspaceName('')
-      setLoading(false)
-      alert('Workspace created successfully')
+      });
+      
+      setLoading(false);
+      
+      // Check if the request was successful
+      if (response.status === 201) {
+        alert('Workspace created successfully');
+        setWorkspaceName(''); // Reset workspace name input
+        setOpen(false);
+      } else {
+        setError(response.data.error || 'Workspace creation failed');
+      }
     } catch (err) {
-      setLoading(false)
-      alert('Workspace creation failed');
+      setLoading(false);
+      if (axios.isAxiosError(err) && err.response) {
+        setError(err.response.data.error || 'Workspace creation failed');
+      } else {
+        setError('Workspace creation failed');
+      }
       console.error(err);
     }
   }
 
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
       <Button className='h-10 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
                   <PlusIcon />
@@ -76,6 +91,7 @@ const WorkSpaceDialog = () => {
           placeholder="Enter workspace name"
           className="mt-1"
         />
+        {error && <p className="text-red-500 text-sm mt-1">{error}</p>} {/* Display error message */}
         {/* {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>} */}
       </div>
 
