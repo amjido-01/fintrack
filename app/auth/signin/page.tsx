@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from 'next/link';
 import { Button } from "@/components/ui/button";
+import { getSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 const Signin = () => {
     const [loading, setLoading] = useState(false)
@@ -14,6 +15,7 @@ const Signin = () => {
         email: "",
         password: "",
       });
+      
       
       const { email, password } = data;
 
@@ -24,6 +26,7 @@ const Signin = () => {
       const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true)
+
         const result = await signIn('credentials', {
             redirect: false,
             email,
@@ -36,7 +39,26 @@ const Signin = () => {
                 email: "",
                 password: "",
             });
-            window.location.href = "/dashboard";
+
+            
+        // Get the session to retrieve the user ID
+        const session = await getSession();
+        const userId = session?.user?.id;
+
+        if (!userId) {
+            alert("Failed to retrieve user ID");
+            setLoading(false);
+            return;
+        }
+
+            const profileResponse = await fetch(`/api/check-profile?id=${userId}`);
+            const profileData = await profileResponse.json();
+
+            if (profileData.profileCompleted) {
+                window.location.href = "/dashboard"
+            } else {
+                window.location.href = "/auth/setting"
+            }
         } else {
             alert("Incorrect email or password")
             setLoading(false)

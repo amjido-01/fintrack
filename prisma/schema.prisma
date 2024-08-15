@@ -19,10 +19,38 @@ model User {
   password      String?
   userName      String?
   image         String?
+  profileCompleted Boolean   @default(false)
+  firstName     String?
+  lastName      String?
   accounts      Account[]
   sessions      Session[]
+  workspaces    Workspace[]
+  expense       Expense[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+
+model Workspace {
+  id           String     @id @default(uuid())
+  workspaceName String
+  createdBy     User      @relation(fields: [createdById], references: [id])
+  createdById   String
+  expenses      Expense[]  // Relation to the Expense model
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
+
+model Expense {
+  id          String     @id @default(uuid())
+  description String
+  amount      Float
+  createdAt   DateTime   @default(now())
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id])
+  workspaceId String
+  user        User       @relation(fields: [userId], references: [id])
+  userId      String
+  // Other fields
 }
 
 model Account {
@@ -63,4 +91,3 @@ model VerificationToken {
 
   @@id([identifier, token])
 }
-

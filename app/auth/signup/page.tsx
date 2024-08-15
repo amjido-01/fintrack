@@ -37,6 +37,7 @@ const Signup = () => {
         
 
         if(!email || !password || !name || !userName) {
+            setLoading(false)
             alert("Please enter an email and password")
             return;
         }
