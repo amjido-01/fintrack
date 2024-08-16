@@ -4,6 +4,7 @@ import "./globals.css";
 import Proveiders from "./providers"
 import { ThemeProvider } from "@/components/theme-provider";
 import RootLayouts from "./RootLayouts";
+import ReactQueryProvider from "./providers/react-query-provider"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,6 +20,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning={true} lang="en">
       <body suppressHydrationWarning={true} className={inter.className}>
+        <ReactQueryProvider>
         <ThemeProvider
          attribute="class"
          defaultTheme="system"
@@ -31,6 +33,7 @@ export default function RootLayout({
       </RootLayouts>
         </Proveiders>
       </ThemeProvider>
+      </ReactQueryProvider>
       </body>
     </html>
   );

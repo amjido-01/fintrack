@@ -1,10 +1,12 @@
+"use client"
 import React from 'react'
 import { Button } from '@/components/ui/button';
-import { PlusIcon } from 'lucide-react';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { z } from 'zod';
+import { useSession } from "next-auth/react";
 import { useState } from 'react'
+import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import {
   Dialog,
@@ -20,11 +22,15 @@ import {
 
 
 const WorkSpaceDialog = () => {
+  const router = useRouter();
+  const { data: session, status } = useSession();
 
    const [loading, setLoading] = useState(false);
    const [workspaceName, setWorkspaceName] = useState('');
    const [error, setError] = useState('');
    const [open, setOpen] = useState(false);
+
+   const userId = session?.user.id;
 
    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setWorkspaceName(e.target.value);
@@ -47,6 +53,7 @@ const WorkSpaceDialog = () => {
         alert('Workspace created successfully');
         setWorkspaceName(''); // Reset workspace name input
         setOpen(false);
+        router.push(`/user/${userId}workspace/${workspaceName}`)
       } else {
         setError(response.data.error || 'Workspace creation failed');
       }
@@ -64,11 +71,8 @@ const WorkSpaceDialog = () => {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-      <Button className='h-10 px-4 py-2 inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
-                  <PlusIcon />
-                  Create a new workspace
-                  </Button>
+      <DialogTrigger className='h-10 px-4 py-2 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
+              Create a new workspace
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -91,11 +95,10 @@ const WorkSpaceDialog = () => {
           placeholder="Enter workspace name"
           className="mt-1"
         />
-        {error && <p className="text-red-500 text-sm mt-1">{error}</p>} {/* Display error message */}
-        {/* {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>} */}
+        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
       </div>
 
-      <Button type="submit" className="w-full">
+      <Button  type="submit" className='h-10 px-4 py-2 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
         Create Workspace
       </Button>
     </form>

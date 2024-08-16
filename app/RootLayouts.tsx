@@ -1,6 +1,8 @@
 "use client"
 import Navbar from '@/components/Navbar';
 import { usePathname } from 'next/navigation';
+import BottomNav from '@/components/BottomNav';
+import LineTabs from '@/components/LineTabs';
 
 export default function RootLayouts({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -8,7 +10,7 @@ export default function RootLayouts({ children }: { children: React.ReactNode })
 
   return (
     <>
-      {!isAuthPage && <Navbar />}
+      {!isAuthPage && <><Navbar /> <LineTabs /> </>}
       {children}
     </>
   );
