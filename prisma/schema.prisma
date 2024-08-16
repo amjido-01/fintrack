@@ -39,6 +39,7 @@ model Workspace {
   expenses      Expense[]  // Relation to the Expense model
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+  lastActiveAt  DateTime @default(now())
 }
 
 model Expense {

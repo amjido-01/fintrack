@@ -2,6 +2,7 @@ import React from 'react';
 import { signOut } from 'next-auth/react';
 import { LogOut } from 'lucide-react';
 import { useSession } from 'next-auth/react';
+import { ChevronDown } from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
 import {
     DropdownMenu,
@@ -16,11 +17,16 @@ const UserAvatar = () => {
     const { data: session, status } = useSession()
   return (
     <DropdownMenu>
-  <DropdownMenuTrigger>
-  <Avatar>
+  <DropdownMenuTrigger className='flex gap-2 items-center px-3'>
+  <Avatar className=''>
     <AvatarImage src="https://github.com/shadcn.png" />
    <AvatarFallback>CN</AvatarFallback>
     </Avatar>
+   <div className='flex items-center'>
+    <p>{session?.user?.name}</p>
+    <ChevronDown />
+   </div>
+
   </DropdownMenuTrigger>
   <DropdownMenuContent className='min-w-[18rem] mr-4'>
 
