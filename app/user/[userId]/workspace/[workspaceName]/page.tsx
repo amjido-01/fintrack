@@ -2,8 +2,6 @@
 import React from 'react'
 import { useRouter, useParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from 'react';
-import WorkSpaceDialog from '@/components/WorkSpaceDialog';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 const page = () => {
@@ -32,7 +30,6 @@ const page = () => {
       <div>
         {JSON.stringify(data, null, 2)}
       </div>
-      <WorkSpaceDialog />
     </div>
   )
 }
