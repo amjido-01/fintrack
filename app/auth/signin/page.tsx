@@ -34,12 +34,6 @@ const Signin = () => {
         });
 
         if(result?.ok) {
-            alert("logged in")
-            setData({
-                email: "",
-                password: "",
-            });
-
             
         // Get the session to retrieve the user ID
         const session = await getSession();
@@ -55,8 +49,17 @@ const Signin = () => {
             const profileData = await profileResponse.json();
 
             if (profileData.profileCompleted) {
+                setData({
+                    email: "",
+                    password: "",
+                });
+                setLoading(false)
                 window.location.href = "/dashboard"
             } else {
+                setData({
+                    email: "",
+                    password: "",
+                });
                 window.location.href = "/auth/setting"
             }
         } else {

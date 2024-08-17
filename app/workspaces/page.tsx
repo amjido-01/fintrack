@@ -2,6 +2,7 @@
 import React from 'react';
 import {
   useQuery,
+  useQueryClient
 } from '@tanstack/react-query'
 import Link from 'next/link';
 import axios from 'axios';
@@ -15,6 +16,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useSession } from 'next-auth/react';
+
+
 
 const page = () => {
   const { data: session, status } = useSession();
@@ -30,27 +33,26 @@ const page = () => {
 
   return (
     <div className='container mx-auto'>
-        <h1>Workspaces</h1>
+      <h1>Workspaces</h1>
 
-        <div className='flex gap-4'>
-            <Link href={`/user/${userId}/workspace/${workspaceName}`}>
-              {data?.map((data) => 
-              <div key={data.id}>
-                  <Card className='w-[20rem]'>
-                <CardHeader>
-                  <CardTitle>{data.workspaceName}</CardTitle>
-                  <CardDescription className='text-green-500'>All wallet</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  Where I manage all my personal incomes
-                </CardContent>
-              </Card>
+      <div className='flex flex-wrap gap-4 border-2 border-red-500'>
+        {data?.map((workspace) => (
+          <Link href={`/user/${userId}/workspace/${workspace.workspaceName}`} key={workspace.id} className='w-[20rem]'>
+            <Card className='h-full'>
+              <CardHeader>
+                <CardTitle>{workspace.workspaceName}</CardTitle>
+                <CardDescription className='text-green-500'>All wallet</CardDescription>
+              </CardHeader>
+              <CardContent>
+                Where I manage all my personal incomes
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
 
-              </div>
-              )}
-            </Link>
-            <WorkspaceCard />
-        </div>
+        {/* Assuming WorkspaceCard is an additional static card */}
+        <WorkspaceCard />
+      </div>
     </div>
   )
 }
