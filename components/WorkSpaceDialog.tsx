@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { z } from 'zod';
+import { Textarea } from "@/components/ui/textarea"
 import { useSession } from "next-auth/react";
 import { useState } from 'react'
 import { useRouter } from 'next/navigation';
@@ -27,6 +28,7 @@ const WorkSpaceDialog = () => {
 
    const [loading, setLoading] = useState(false);
    const [workspaceName, setWorkspaceName] = useState('');
+   const [description, setDescription] = useState('');
    const [error, setError] = useState('');
    const [open, setOpen] = useState(false);
 
@@ -44,6 +46,7 @@ const WorkSpaceDialog = () => {
     try {
       const response = await axios.post('/api/workspace', {
         workspaceName,
+        description
       });
       
       setLoading(false);
@@ -91,13 +94,16 @@ const WorkSpaceDialog = () => {
           type="text"
           name='workspaceName'
           value={workspaceName}
-          onChange={handleChange}
+          onChange={(e) => setWorkspaceName(e.target.value)}
           placeholder="Enter workspace name"
           className="mt-1"
         />
         {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
       </div>
-
+      <div className="">
+      <Label htmlFor="description">Description</Label>
+      <Textarea value={description} onChange={(e) => setDescription(e.target.value)} className='mt-1' name='description' required placeholder="Add a description for your workspace." id="description" />
+    </div>
       <Button  type="submit" className='h-10 px-4 py-2 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
       {loading ? "Creating..." : "Create Workspace"}
       </Button>

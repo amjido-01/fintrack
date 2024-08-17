@@ -44,7 +44,7 @@ const page = () => {
                 <CardDescription className='text-green-500'>All wallet</CardDescription>
               </CardHeader>
               <CardContent>
-                Where I manage all my personal incomes
+               {workspace.description}
               </CardContent>
             </Card>
           </Link>

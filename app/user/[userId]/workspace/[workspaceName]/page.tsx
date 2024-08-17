@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 const page = () => {
     // const searchParams  = useSearchParams();
     const router = useRouter();
-    const {workspaceName, userId} = useParams();
+    const {workspaceName} = useParams();
     const { data: session, status } = useSession();
     // const [workspaceData, setWorkspaceData] = useState(null);
 

@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Loader2 } from 'lucide-react'
+import axios from 'axios'
 import { Input } from '@/components/ui/input'
 const page = () => {
   const [firstName, setFirstname] = useState('');
@@ -20,21 +21,18 @@ const handleSubmit = async (e: any) => {
   e.preventDefault()
   setLoading(true)
 
-  const response = await fetch('/api/update-profile', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ firstName, lastName }),
-  });
-
-  if (response.ok) {
+  await axios.post("/api/update-profile", {
+    firstName,
+    lastName,
+  }).then((response) => {
+    console.log(response)
     setLoading(false)
     router.push('/dashboard'); // Redirect to dashboard after successful profile setup
-  } else {
-    console.error('Failed to update profile');
+  }).catch((error) => {
+    console.error(error)
     setLoading(false)
-  }
+  })
+
 }
 
   return (

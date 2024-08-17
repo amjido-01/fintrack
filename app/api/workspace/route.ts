@@ -3,9 +3,11 @@ import { prisma } from "@/lib/prismaDB";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { Description } from "@radix-ui/react-toast";
 // Zod schema for validating the request data
 const workspaceSchema = z.object({
   workspaceName: z.string().min(1, "Workspace name is required"),
+  description: z.string().min(1, "Workspace name is required")
 });
 
 export async function handler(req: NextRequest) {
@@ -19,7 +21,7 @@ export async function handler(req: NextRequest) {
   if (req.method === "POST") {
     try {
       const body = await req.json();
-      const { workspaceName } = workspaceSchema.parse(body);
+      const { workspaceName, description } = workspaceSchema.parse(body);
   
       // check if workspace already exists
       const existingWorkspace = await prisma.workspace.findFirst({
@@ -40,6 +42,7 @@ export async function handler(req: NextRequest) {
       const result = await prisma.workspace.create({
         data: {
           workspaceName,
+          description,
           createdById: userId
         },
       });
