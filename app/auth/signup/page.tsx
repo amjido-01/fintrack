@@ -8,12 +8,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useToast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { signIn } from 'next-auth/react';
 
 const Signup = () => {
     const router = useRouter();
+    const { toast } = useToast();
     const [loading, setLoading] = useState(false);  
 
     const [data, setData] = useState({
@@ -24,6 +26,14 @@ const Signup = () => {
       });
 
       const { email, password, name, userName } = data;
+
+      function showToast(title: string, description: string, variant: "default" | "destructive") {
+        toast({
+            title: title,
+            description: description,
+            variant: variant,
+        })
+      }
 
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         console.log(e.target.value)
@@ -48,7 +58,8 @@ const Signup = () => {
             name,
             userName,
         }).then(() => {
-            alert("registered")
+
+            showToast("Success", "You have been registered, now you can login", "default")
             router.push("/auth/signin")
             setData({
                 email: "",

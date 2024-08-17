@@ -4,13 +4,21 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import {ModeToggle} from "@/components/ui/ModeToggle";
 import { Button } from './ui/button';
+import { usePathname } from 'next/navigation';
 import UserAvatar from './ui/UserAvatar';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+
+const NavLinks = [
+	{ id: 1, name: 'Dashboard', path: '/dashboard' },
+	{ id: 2, name: 'Workspaces', path: '/workspaces' },
+];
 
 const Navbar = () => {
   const { data: session, status } = useSession();
   const loading = status === "loading";
-  
+  const pathname = usePathname();
+  const isActive = (path: string) => path === pathname;
   return (
     <nav className="container w-full z-20 start-0">
   <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -20,10 +28,13 @@ const Navbar = () => {
       <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">FinTrack</span>
   </Link>
 
-    {session?.user && <div className='md:flex gap-10 hidden'>
-      <Link href="/dashboard">Dashboard</Link>
-      <Link href="/workspaces">Workspaces</Link>
-    </div>}
+    {session?.user && 
+      <ul className='md:flex gap-10 hidden'>
+        {NavLinks.map((links) => {
+          return (<li key={links.id}><Link className={isActive(links.path) ? 'underline underline-offset-4 decoration-2 decoration-primary' : 'text-white'} href={links.path}>{links.name}</Link></li>);
+        })}
+      </ul>
+    }
     
     <div className="flex gap-8 md:order-2 space-x-3 md:space-x-0">
     <div><ModeToggle /></div>
