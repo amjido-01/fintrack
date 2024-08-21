@@ -45,22 +45,24 @@ const Signin = () => {
             return;
         }
 
-            const profileResponse = await fetch(`/api/check-profile?id=${userId}`);
-            const profileData = await profileResponse.json();
+            const hasWorkspace = await fetch(`/api/check-workspace?id=${userId}`);
+            const profileData = await hasWorkspace.json();
 
-            if (profileData.profileCompleted) {
+            if (profileData.hasWorkspace) {
+                const lastWorkspace = profileData.lastWorkspace;
                 setData({
                     email: "",
                     password: "",
                 });
                 setLoading(false)
-                window.location.href = "/dashboard"
+                window.location.href = `/user/${userId}/workspace/${lastWorkspace.workspaceName}/dashboard`;
+                // window.location.href = "/dashboard"
             } else {
                 setData({
                     email: "",
                     password: "",
                 });
-                window.location.href = "/auth/setting"
+                window.location.href = "/createworkspace"
             }
         } else {
             alert("Incorrect email or password")

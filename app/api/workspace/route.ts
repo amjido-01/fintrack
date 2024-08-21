@@ -3,7 +3,8 @@ import { prisma } from "@/lib/prismaDB";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { Description } from "@radix-ui/react-toast";
+import { redirect } from "next/navigation";
+// import { useRouter } from "next/navigation";
 // Zod schema for validating the request data
 const workspaceSchema = z.object({
   workspaceName: z.string().min(1, "Workspace name is required"),
@@ -12,6 +13,7 @@ const workspaceSchema = z.object({
 
 export async function handler(req: NextRequest) {
   const session = await getServerSession(authOptions);
+  // const router = useRouter()
 
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -48,7 +50,11 @@ export async function handler(req: NextRequest) {
       });
   
       // Return the newly created workspace
+      // router.push(`/user/${userId}/workspace/${workspaceName}`)
+      // window.location.href=`/user/${userId}/workspace/${workspaceName}`
+      // redirect(`/user/${userId}/workspace/${workspaceName}`)
       return NextResponse.json(result, { status: 201 });
+
     } catch (err) {
       if (err instanceof z.ZodError) {
         return NextResponse.json({ error: err.errors }, { status: 400 });

@@ -56,7 +56,8 @@ const WorkSpaceDialog = () => {
         alert('Workspace created successfully');
         setWorkspaceName(''); // Reset workspace name input
         setOpen(false);
-        // router.push(`/user/${userId}workspace/${workspaceName}`)
+        router.push(`/user/${userId}workspace/${workspaceName}`)
+        router.push(`/user/${userId}/workspace/${workspaceName}`)
       } else {
         setError(response.data.error || 'Workspace creation failed');
       }

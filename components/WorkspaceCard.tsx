@@ -12,6 +12,7 @@ import {
   
 
 const WorkspaceCard = () => {
+  const [open, setOpen] = React.useState(false)
   return (
     <Card className='w-[20rem]'>
   <CardHeader>
@@ -19,7 +20,7 @@ const WorkspaceCard = () => {
     <CardDescription>Take control of your expenses and save more money with budgets!</CardDescription>
   </CardHeader>
   <CardContent>
-    <WorkSpaceDialog />
+    {/* <WorkSpaceDialog /> */}
   </CardContent>
 </Card>
   )

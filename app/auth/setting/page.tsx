@@ -13,6 +13,7 @@ const page = () => {
   const [firstName, setFirstname] = useState('');
   const [lastName, setLastname] = useState('');
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const router = useRouter();
 
 
@@ -27,7 +28,9 @@ const handleSubmit = async (e: any) => {
   }).then((response) => {
     console.log(response)
     setLoading(false)
-    router.push('/dashboard'); // Redirect to dashboard after successful profile setup
+    // setOpenDialog(true);
+    router.push("/createworkspace"); // Redirect to dashboard after successful profile setup
+    //router.push('/dashboard'); // Redirect to dashboard after successful profile setup
   }).catch((error) => {
     console.error(error)
     setLoading(false)
