@@ -25,6 +25,7 @@ import { CalendarDateRangePicker } from "@/components/date-range-picker"
 import { MainNav } from "@/components/main-nav"
 import { Overview } from "@/components/overview"
 import { RecentSales } from "@/components/RecentSales"
+import UserAvatar from '@/components/ui/UserAvatar';
 import { Search } from "@/components/search"
 import TeamSwitcher from "@/components/team-switcher"
 import { UserNav } from "@/components/user-nav"
@@ -58,30 +59,15 @@ const page = () => {
 
     return (
       <>
-        <div className="md:hidden">
-          <Image
-            src="/examples/dashboard-light.png"
-            width={1280}
-            height={866}
-            alt="Dashboard"
-            className="block dark:hidden"
-          />
-          <Image
-            src="/examples/dashboard-dark.png"
-            width={1280}
-            height={866}
-            alt="Dashboard"
-            className="hidden dark:block"
-          />
-        </div>
-        <div className="hidden flex-col md:flex">
+       
+        <div className="flex-col md:flex">
           <div className="border-b">
             <div className="flex h-16 items-center px-4">
               <TeamSwitcher />
               <MainNav className="mx-6" />
               <div className="ml-auto flex items-center space-x-4">
                 <Search />
-                <UserNav />
+                <UserAvatar />
               </div>
             </div>
           </div>
@@ -111,7 +97,7 @@ const page = () => {
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
-                        Total Revenue
+                        Total Expenses
                       </CardTitle>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"

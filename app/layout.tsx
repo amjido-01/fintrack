@@ -3,7 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Proveiders from "./providers"
 import { ThemeProvider } from "@/components/theme-provider";
-import RootLayouts from "./RootLayouts";
+// import RootLayouts from "./RootLayouts";
 import { Toaster } from "@/components/ui/toaster"
 import ReactQueryProvider from "./providers/react-query-provider"
 const inter = Inter({ subsets: ["latin"] });
@@ -29,9 +29,10 @@ export default function RootLayout({
          disableTransitionOnChange
         >
       <Proveiders>
-      <RootLayouts>
-        {children}
-      </RootLayouts>
+      {/* <RootLayouts>
+      </RootLayouts> */}
+      {children}
+
       <Toaster />
         </Proveiders>
       </ThemeProvider>

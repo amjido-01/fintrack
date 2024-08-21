@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button"
 import { Textarea } from '@/components/ui/textarea';
+import { Loader2 } from 'lucide-react';
 import WorkSpaceDialog from '@/components/WorkSpaceDialog';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -81,7 +82,7 @@ const page = () => {
 
         <h3 className="mt-3 text-xl font-medium text-center">Create a Workspace</h3>
 
-        <form>
+        <form onSubmit={handleSubmit}>
         <div className='mt-4'>
           <Label htmlFor="name">Workspace Name</Label>
           <Input
@@ -102,38 +103,17 @@ const page = () => {
       </div>
 
       <div className='mt-4'>
-      <Button  type="submit" className='h-10 px-4 py-2 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
-        {loading ? "Creating..." : "Create Workspace"}
-        </Button>
+        {loading ? <Button className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600" disabled>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      Please wait
+    </Button>:   <Button  type="submit" className='h-10 px-4 py-2 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
+        Create Workspace
+        </Button>}
       </div>
 
         </form>
     </div>
-
-   
 </div>
-             {/* <form onSubmit={handleSubmit} className="space-y-4 w-[300px] border-2">
-        <div>
-          <Label htmlFor="name">Workspace Name</Label>
-          <Input
-            id="workspaceName"
-            type="text"
-            name='workspaceName'
-            value={workspaceName}
-            onChange={(e) => setWorkspaceName(e.target.value)}
-            placeholder="Enter workspace name"
-            className="mt-1"
-          />
-          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-        </div>
-        <div className="">
-        <Label htmlFor="description">Description</Label>
-        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} className='mt-1' name='description' required placeholder="Add a description for your workspace." id="description" />
-      </div>
-        <Button  type="submit" className='h-10 px-4 py-2 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
-        {loading ? "Creating..." : "Create Workspace"}
-        </Button>
-      </form> */}
         </div>
        
     )
