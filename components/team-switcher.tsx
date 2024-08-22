@@ -46,43 +46,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Workspace } from "@prisma/client"
 
-const groups = [
-  {
-    label: "Personal Account",
-    teams: [
-      {
-        label: "Alicia Koch",
-        value: "personal",
-      },
-    ],
-  },
-  {
-    label: "Teams",
-    teams: [
-      {
-        label: "Acme Inc.",
-        value: "acme-inc",
-      },
-      {
-        label: "Monsters Inc.",
-        value: "monsters",
-      },
-    ],
-  },
-]
+// const groups = [
+//   {
+//     label: "Personal Account",
+//     teams: [
+//       {
+//         label: "Alicia Koch",
+//         value: "personal",
+//       },
+//     ],
+//   },
+//   {
+//     label: "Teams",
+//     teams: [
+//       {
+//         label: "Acme Inc.",
+//         value: "acme-inc",
+//       },
+//       {
+//         label: "Monsters Inc.",
+//         value: "monsters",
+//       },
+//     ],
+//   },
+// ]
 
-type Team = (typeof groups)[number]["teams"][number]
+// type Team = (typeof groups)[number]["teams"][number]
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
-interface TeamSwitcherProps extends PopoverTriggerProps {}
+interface TeamSwitcherProps extends PopoverTriggerProps {
+  workspaces: Workspace[];
+}
 
-export default function TeamSwitcher({ className }: TeamSwitcherProps) {
+export default function TeamSwitcher({ className, workspaces }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false)
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0]
+  const [selectedTeam, setSelectedTeam] = React.useState<Workspace>(
+    workspaces[0]
   )
 
   return (
@@ -98,51 +101,50 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
           >
             <Avatar className="mr-2 h-5 w-5">
               <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-                alt={selectedTeam.label}
+                src={`https://avatar.vercel.sh/${selectedTeam.workspaceName}.png`}
+                alt={selectedTeam.workspaceName}
                 className="grayscale"
               />
               <AvatarFallback>SC</AvatarFallback>
             </Avatar>
-            {selectedTeam.label}
+            {workspaces.find((workspace) => workspace.id === selectedTeam.id)?.workspaceName}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
-            <CommandInput placeholder="Search team..." />
+            <CommandInput placeholder="Search workspace..." />
             <CommandList>
-              <CommandEmpty>No team found.</CommandEmpty>
-              {groups.map((group) => (
-                <CommandGroup key={group.label} heading={group.label}>
-                  {group.teams.map((team) => (
+              <CommandEmpty>No workspace  found.</CommandEmpty>
+
+              {workspaces.map((workspace) => (
+                <CommandGroup key={workspace.id} heading={workspace.workspaceName}>
                     <CommandItem
-                      key={team.value}
+                      key={workspace.id}
                       onSelect={() => {
-                        setSelectedTeam(team)
+                        setSelectedTeam(workspace)
                         setOpen(false)
                       }}
                       className="text-sm"
                     >
                       <Avatar className="mr-2 h-5 w-5">
                         <AvatarImage
-                          src={`https://avatar.vercel.sh/${team.value}.png`}
-                          alt={team.label}
+                          src={`https://avatar.vercel.sh/${workspace.workspaceName}.png`}
+                          alt={workspace.workspaceName}
                           className="grayscale"
                         />
                         <AvatarFallback>SC</AvatarFallback>
                       </Avatar>
-                      {team.label}
+                      {workspace.workspaceName}
                       <CheckIcon
                         className={cn(
                           "ml-auto h-4 w-4",
-                          selectedTeam.value === team.value
+                          selectedTeam.id === selectedTeam.id
                             ? "opacity-100"
                             : "opacity-0"
                         )}
                       />
                     </CommandItem>
-                  ))}
                 </CommandGroup>
               ))}
             </CommandList>
@@ -157,7 +159,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
-                    Create Team
+                    Create Workspace
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>

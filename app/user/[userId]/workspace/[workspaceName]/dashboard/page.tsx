@@ -43,14 +43,19 @@ const page = () => {
     const { data: session, status } = useSession();
     // const [workspaceData, setWorkspaceData] = useState(null);
 
-    const getWorkspaceData = async () => {
-        const res = await axios.get(`/api/workspac/${workspaceName}`);
-        return res.data;
-        // setWorkspaceData(res.data);
+    // const getWorkspaceData = async () => {
+    //     const res = await axios.get(`/api/workspac/${workspaceName}`);
+    //     return res.data;
+    //     // setWorkspaceData(res.data);
+    // }
+
+    const getWorkspaces = async () => {
+      const res = await axios.get(`/api/workspace`);
+      return res.data;
     }
     
-    const {data, isLoading, error} = useQuery({queryKey: ['workspaceData'], queryFn: getWorkspaceData});
-    console.log(data);
+    
+    const {data: workspaces, isLoading, error} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
     
     if (isLoading) return <div>Loading...</div>;
     if (error) return <div>Error: {error.message}</div>;
@@ -63,7 +68,7 @@ const page = () => {
         <div className="flex-col md:flex ">
           <div className="border-b">
             <div className="flex h-16 items-center px-4">
-              <TeamSwitcher />
+              <TeamSwitcher workspaces={workspaces} />
               <MainNav className="mx-6" />
              
               <div className="ml-auto flex items-center space-x-4">
