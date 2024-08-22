@@ -60,11 +60,12 @@ const page = () => {
     return (
       <>
        
-        <div className="flex-col md:flex">
+        <div className="flex-col md:flex ">
           <div className="border-b">
             <div className="flex h-16 items-center px-4">
               <TeamSwitcher />
               <MainNav className="mx-6" />
+             
               <div className="ml-auto flex items-center space-x-4">
                 <Search />
                 <UserAvatar />
@@ -73,11 +74,17 @@ const page = () => {
           </div>
           <div className="flex-1 space-y-4 p-8 pt-6">
             <div className="flex items-center justify-between space-y-2">
+              <div className='flex items-center space-x-2'>
               <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+              <Button className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>Add Expenses</Button>
+              </div>
+
               <div className="flex items-center space-x-2">
                 <CalendarDateRangePicker />
-                <Button>Download</Button>
+                <Button className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>Download</Button>
               </div>
+            </div>
+            <div>
             </div>
             <Tabs defaultValue="overview" className="space-y-4">
               <TabsList>

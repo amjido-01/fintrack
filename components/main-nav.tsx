@@ -1,5 +1,5 @@
 import Link from "next/link"
-
+import { Button } from "./ui/button"
 import { cn } from "@/lib/utils"
 
 export function MainNav({
@@ -17,7 +17,7 @@ export function MainNav({
       >
         Overview
       </Link>
-      <Link
+      {/* <Link
         href="/examples/dashboard"
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
@@ -34,7 +34,7 @@ export function MainNav({
         className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
       >
         Settings
-      </Link>
+      </Link> */}
     </nav>
   )
 }
