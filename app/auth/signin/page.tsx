@@ -6,10 +6,12 @@ import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from 'next/link';
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button";
 import { getSession } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 const Signin = () => {
+    const router = useRouter();
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState({
         email: "",
@@ -55,14 +57,16 @@ const Signin = () => {
                     password: "",
                 });
                 setLoading(false)
-                window.location.href = `/user/${userId}/workspace/${lastWorkspace.workspaceName}/dashboard`;
+                router.push(`/user/${userId}/workspace/${lastWorkspace.workspaceName}/dashboard`);
+                // window.location.href = `/user/${userId}/workspace/${lastWorkspace.workspaceName}/dashboard`;
                 // window.location.href = "/dashboard"
             } else {
                 setData({
                     email: "",
                     password: "",
                 });
-                window.location.href = "/createworkspace"
+                router.push("/createworkspace")
+                // window.location.href = "/createworkspace"
             }
         } else {
             alert("Incorrect email or password")
