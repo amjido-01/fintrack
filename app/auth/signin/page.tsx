@@ -61,7 +61,7 @@ const Signin = () => {
                 // window.location.href = `/user/${userId}/workspace/${lastWorkspace.workspaceName}/dashboard`;
                 // window.location.href = "/dashboard"
             } else {
-                setData({
+               setData({
                     email: "",
                     password: "",
                 });

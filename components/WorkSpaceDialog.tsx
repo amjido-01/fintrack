@@ -34,10 +34,6 @@ const WorkSpaceDialog = () => {
 
    const userId = session?.user.id;
 
-   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWorkspaceName(e.target.value);
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -56,8 +52,7 @@ const WorkSpaceDialog = () => {
         alert('Workspace created successfully');
         setWorkspaceName(''); // Reset workspace name input
         setOpen(false);
-        router.push(`/user/${userId}workspace/${workspaceName}`)
-        router.push(`/user/${userId}/workspace/${workspaceName}`)
+        router.push(`/user/${userId}/workspace/${workspaceName}/dashboard`)
       } else {
         setError(response.data.error || 'Workspace creation failed');
       }
@@ -75,7 +70,7 @@ const WorkSpaceDialog = () => {
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className='h-10 px-4 py-2 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
+      <DialogTrigger className='py-3 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50'>
               Create a new workspace
       </DialogTrigger>
       <DialogContent>
@@ -105,7 +100,7 @@ const WorkSpaceDialog = () => {
       <Label htmlFor="description">Description</Label>
       <Textarea value={description} onChange={(e) => setDescription(e.target.value)} className='mt-1' name='description' required placeholder="Add a description for your workspace." id="description" />
     </div>
-      <Button  type="submit" className='h-10 px-4 py-2 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
+      <Button  type="submit" className='w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
       {loading ? "Creating..." : "Create Workspace"}
       </Button>
     </form>

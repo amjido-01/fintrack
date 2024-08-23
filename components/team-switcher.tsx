@@ -39,6 +39,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import WorkSpaceDialog from "./WorkSpaceDialog"
 import {
   Select,
   SelectContent,
@@ -48,32 +49,6 @@ import {
 } from "@/components/ui/select"
 import { Workspace } from "@prisma/client"
 
-// const groups = [
-//   {
-//     label: "Personal Account",
-//     teams: [
-//       {
-//         label: "Alicia Koch",
-//         value: "personal",
-//       },
-//     ],
-//   },
-//   {
-//     label: "Teams",
-//     teams: [
-//       {
-//         label: "Acme Inc.",
-//         value: "acme-inc",
-//       },
-//       {
-//         label: "Monsters Inc.",
-//         value: "monsters",
-//       },
-//     ],
-//   },
-// ]
-
-// type Team = (typeof groups)[number]["teams"][number]
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
@@ -105,20 +80,20 @@ export default function TeamSwitcher({ className, workspaces }: TeamSwitcherProp
                 alt={selectedTeam.workspaceName}
                 className="grayscale"
               />
-              <AvatarFallback>SC</AvatarFallback>
+              <AvatarFallback>W</AvatarFallback>
             </Avatar>
             {workspaces.find((workspace) => workspace.id === selectedTeam.id)?.workspaceName}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
+        <PopoverContent className="w-[300px] p-0">
           <Command>
             <CommandInput placeholder="Search workspace..." />
             <CommandList>
               <CommandEmpty>No workspace  found.</CommandEmpty>
 
               {workspaces.map((workspace) => (
-                <CommandGroup key={workspace.id} heading={workspace.workspaceName}>
+                <CommandGroup className="border-2 border-red-500" key={workspace.id}>
                     <CommandItem
                       key={workspace.id}
                       onSelect={() => {
@@ -127,15 +102,20 @@ export default function TeamSwitcher({ className, workspaces }: TeamSwitcherProp
                       }}
                       className="text-sm"
                     >
+                      <div>
+                      <div className="flex">
                       <Avatar className="mr-2 h-5 w-5">
                         <AvatarImage
                           src={`https://avatar.vercel.sh/${workspace.workspaceName}.png`}
                           alt={workspace.workspaceName}
                           className="grayscale"
                         />
-                        <AvatarFallback>SC</AvatarFallback>
+                        <AvatarFallback>W</AvatarFallback>
                       </Avatar>
                       {workspace.workspaceName}
+                      </div>
+                      <p className="mt-1 text-[10px] pl-2 truncate">{workspace.description}</p>
+                      </div>
                       <CheckIcon
                         className={cn(
                           "ml-auto h-4 w-4",
@@ -151,17 +131,9 @@ export default function TeamSwitcher({ className, workspaces }: TeamSwitcherProp
             <CommandSeparator />
             <CommandList>
               <CommandGroup>
-                <DialogTrigger asChild>
-                  <CommandItem
-                    onSelect={() => {
-                      setOpen(false)
-                      setShowNewTeamDialog(true)
-                    }}
-                  >
-                    <PlusCircledIcon className="mr-2 h-5 w-5" />
-                    Create Workspace
-                  </CommandItem>
-                </DialogTrigger>
+                <CommandItem>
+                <WorkSpaceDialog />
+                </CommandItem>                
               </CommandGroup>
             </CommandList>
           </Command>
