@@ -30,11 +30,6 @@ const page = () => {
 //    const [open, setOpen] = useState(false);
 
    const userId = session?.user.id;
-
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setWorkspaceName(e.target.value);
-      };
     
       const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();

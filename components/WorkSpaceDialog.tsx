@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dialog"
 
 // Define Zod schema
-;
 
 
 const WorkSpaceDialog = () => {
@@ -51,6 +50,7 @@ const WorkSpaceDialog = () => {
       if (response.status === 201) {
         alert('Workspace created successfully');
         setWorkspaceName(''); // Reset workspace name input
+        setDescription("")
         setOpen(false);
         router.push(`/user/${userId}/workspace/${workspaceName}/dashboard`)
       } else {

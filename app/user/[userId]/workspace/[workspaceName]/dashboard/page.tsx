@@ -7,6 +7,14 @@ import { Metadata } from "next"
 import Image from "next/image"
 import { useQuery } from '@tanstack/react-query';
 import Layout from '@/components/Layout';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -15,20 +23,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import ExpensesDialog from '@/components/ExpensesDialog';
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
+import { useState } from 'react';
 import { CalendarDateRangePicker } from "@/components/date-range-picker"
 import { MainNav } from "@/components/main-nav"
 import { Overview } from "@/components/overview"
-import { RecentSales } from "@/components/RecentSales"
+import { RecentExpenses } from "@/components/RecentExpenses"
 import UserAvatar from '@/components/ui/UserAvatar';
 import { Search } from "@/components/search"
-import TeamSwitcher from "@/components/team-switcher"
+import WorkspaceSwitcher from "@/components/workspace-switcher"
 import { UserNav } from "@/components/user-nav"
+import WorkSpaceDialog from '@/components/WorkSpaceDialog';
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -39,6 +50,7 @@ import { UserNav } from "@/components/user-nav"
 const page = () => {
     // const searchParams  = useSearchParams();
     const router = useRouter();
+    const [open, setOpen] = useState(false);
     const {workspaceName} = useParams();
     const { data: session, status } = useSession();
     // const [workspaceData, setWorkspaceData] = useState(null);
@@ -53,6 +65,14 @@ const page = () => {
       const res = await axios.get(`/api/workspace`);
       return res.data;
     }
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      // setLoading(true);
+      alert("creata an expense")
+  
+    }
+  
     
     
     const {data: workspaces, isLoading, error} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
@@ -68,7 +88,7 @@ const page = () => {
         <div className="flex-col md:flex ">
           <div className="border-b">
             <div className="flex h-16 items-center px-4">
-              <TeamSwitcher workspaces={workspaces} />
+              <WorkspaceSwitcher workspaces={workspaces} />
               <MainNav className="mx-6" />
              
               <div className="ml-auto flex items-center space-x-4">
@@ -81,7 +101,9 @@ const page = () => {
             <div className="flex items-center justify-between space-y-2">
               <div className='flex items-center space-x-2'>
               <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-              <Button className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>Add Expenses</Button>
+              <ExpensesDialog />
+              
+              {/* <Button onClick={handleSubmit} className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>Add Expenses</Button> */}
               </div>
 
               <div className="flex items-center space-x-2">
@@ -219,13 +241,13 @@ const page = () => {
                   </Card>
                   <Card className="col-span-3">
                     <CardHeader>
-                      <CardTitle>Recent Sales</CardTitle>
+                      <CardTitle>Recent Expenses</CardTitle>
                       <CardDescription>
-                        You made 265 sales this month.
+                        You have 265 expenses this month.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <RecentSales />
+                      <RecentExpenses />
                     </CardContent>
                   </Card>
                 </div>
