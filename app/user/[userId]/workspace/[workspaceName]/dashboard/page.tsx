@@ -16,6 +16,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { TransactionsList } from '@/components/TransactionsList';
 import {
   Card,
   CardContent,
@@ -24,6 +25,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import ExpensesDialog from '@/components/ExpensesDialog';
+import { Total } from '@/components/Total';
 import {
   Tabs,
   TabsContent,
@@ -97,20 +99,23 @@ const page = () => {
               </div>
             </div>
           </div>
-          <div className="flex-1 space-y-4 p-8 pt-6">
-            <div className="flex items-center justify-between space-y-2">
-              <div className='flex items-center space-x-2'>
+          <div className="flex-1 space-y-4 p-8 pt-6 ">
+
+            <div className="flex flex-col justify-start md:flex-row md:items-center md:justify-between space-y-2">
+
+              <div className='flex items-center  space-x-2 mb-2 md:mb-0'>
               <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+              <div>
               <ExpensesDialog />
-              
-              {/* <Button onClick={handleSubmit} className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>Add Expenses</Button> */}
+              </div>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 mt-2 md:mt-2">
                 <CalendarDateRangePicker />
-                <Button className='inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>Download</Button>
               </div>
             </div>
+
+
             <div>
             </div>
             <Tabs defaultValue="overview" className="space-y-4">
@@ -118,9 +123,6 @@ const page = () => {
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="analytics" disabled>
                   Analytics
-                </TabsTrigger>
-                <TabsTrigger value="reports" disabled>
-                  Reports
                 </TabsTrigger>
                 <TabsTrigger value="notifications" disabled>
                   Notifications
@@ -156,7 +158,7 @@ const page = () => {
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium">
-                        Subscriptions
+                      Average Daily Expense
                       </CardTitle>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -182,7 +184,7 @@ const page = () => {
                   </Card>
                   <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Sales</CardTitle>
+                      <CardTitle className="text-sm font-medium">Top Category</CardTitle>
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
@@ -198,48 +200,22 @@ const page = () => {
                       </svg>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">+12,234</div>
+                      <div className="text-2xl font-bold">Food</div>
                       <p className="text-xs text-muted-foreground">
                         +19% from last month
                       </p>
                     </CardContent>
                   </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Active Now
-                      </CardTitle>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                      >
-                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">+573</div>
-                      <p className="text-xs text-muted-foreground">
-                        +201 since last hour
-                      </p>
-                    </CardContent>
-                  </Card>
+
+                   
                 </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                  <Card className="col-span-4">
-                    <CardHeader>
-                      <CardTitle>Overview</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2">
-                      <Overview />
-                    </CardContent>
-                  </Card>
-                  <Card className="col-span-3">
+                <div>
+                    <Total />
+                  </div>
+                <div className="flex flex-col md:flex-row gap-4">
+
+                      <Overview />  
+                  <Card className="w-full md:w-1/2">
                     <CardHeader>
                       <CardTitle>Recent Expenses</CardTitle>
                       <CardDescription>
@@ -250,6 +226,18 @@ const page = () => {
                       <RecentExpenses />
                     </CardContent>
                   </Card>
+                </div>
+                <div>
+                <div>
+                  <Card className="col-span-4">
+                  <CardHeader>
+                    <CardTitle>Transaction History</CardTitle>
+                  </CardHeader>
+                  <CardContent className="pl-2">
+                    <TransactionsList />
+                  </CardContent>
+                  </Card>
+                    </div>
                 </div>
               </TabsContent>
             </Tabs>
