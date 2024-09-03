@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Loader2 } from "lucide-react";
 import {PlusCircle} from "lucide-react"
+import axios from 'axios';
 import {
     Dialog,
     DialogContent,
@@ -20,33 +21,67 @@ import {
     SelectTrigger,
     SelectValue, } from './ui/select';
 
-const ExpensesDialog = () => {
+    interface Expense {
+      userId: string;
+      workspaceId: string;
+    }
+
+
+    const categories = ["Food", "Clothing", "Transportation", "Entertainment", "Medical", "Others"]
+
+const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     const [open, setOpen] = useState(false)
     const [expenseName, setExpenseName] = useState('')
     const [date, setDate] = useState('')
-    const [expenseAmount, setExpenseAmount] = useState('')
+    const [category, setCategory] = useState(categories[0])
+    const [amount, setAmount] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [note, setNote] = useState('')
     const [data, setData] = useState({})
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        setData({
-          expenseName,
-          date,
-          expenseAmount,
 
-        })
-        setOpen(false)
+        if (!expenseName || !date || !amount || !category) {
+          setError('All fields are required');
+          return;
     }
-    console.log(data);
-    
+
+    try {
+      const response = await axios.post("/api/expenses", {
+        expenseName,
+        date,
+        amount,
+        category,
+        note,
+        workspaceId,
+        userId
+      })
+
+      if (!response.data.error) {
+        alert("expense created successfully")
+        setExpenseName('');
+        setDate('');
+        setAmount('');
+        setCategory('');
+        setNote('');
+        setOpen(false)
+        // window.location.href = `/user/${userId}/workspace/${workspaceId}/dashboard`
+
+      } else {
+        alert("Expense creation failed")
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('An error occurred while submitting the form');
+    }
+  }    
   return (
     <Dialog open={open} onOpenChange={setOpen}>
     <DialogTrigger className='py-2 px-4 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
               <PlusCircle className="mr-2 h-4 w-4" />
-               New Workspace
+               New Expense
     </DialogTrigger>
     <DialogContent>
       <DialogHeader>
@@ -58,6 +93,7 @@ const ExpensesDialog = () => {
       </DialogHeader>
       <div>
       <form onSubmit={handleSubmit} className="space-y-4">
+      {error && <div style={{ color: 'red' }}>{error}</div>}
     <div>
       <Label htmlFor="name">Expense Name</Label>
       <Input
@@ -77,8 +113,8 @@ const ExpensesDialog = () => {
         id="amount"
         type="text"
         name='amount'
-        value={expenseAmount}
-        onChange={(e) => setExpenseAmount(e.target.value)}
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
         placeholder="Enter amount"
         className="mt-1"
       />
@@ -91,12 +127,11 @@ const ExpensesDialog = () => {
       <SelectValue placeholder="Select a category" />
       </SelectTrigger>
       <SelectContent>
-      <SelectItem value="food">Food</SelectItem>
-      <SelectItem value="transportation">Transportation</SelectItem>
-      <SelectItem value="entertainment">Entertainment</SelectItem>
-      <SelectItem value="utilities">Utilities</SelectItem>
-      <SelectItem value="bills">Bills</SelectItem>
-      <SelectItem value="other">Other</SelectItem>
+        {categories.map((category) => (
+          <SelectItem key={category} value={category}>
+            {category}
+          </SelectItem>
+        ))}
       </SelectContent>
       </Select>
       

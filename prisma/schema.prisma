@@ -25,7 +25,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   workspaces    Workspace[]
-  expense       Expense[]
+  expenses       Expense[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -45,13 +45,18 @@ model Workspace {
 
 model Expense {
   id          String     @id @default(uuid())
-  description String
+  expenseName String
+  date        DateTime
+  note        String
+  category    String
   amount      Float
   createdAt   DateTime   @default(now())
   workspace   Workspace  @relation(fields: [workspaceId], references: [id])
   workspaceId String
   user        User       @relation(fields: [userId], references: [id])
   userId      String
+  @@index([userId])
+  @@index([workspaceId])
   // Other fields
 }
 

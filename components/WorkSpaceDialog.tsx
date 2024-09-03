@@ -45,6 +45,7 @@ const WorkSpaceDialog = () => {
       });
       
       setLoading(false);
+      console.log("response", response.data.id)
       
       // Check if the request was successful
       if (response.status === 201) {
@@ -52,7 +53,7 @@ const WorkSpaceDialog = () => {
         setWorkspaceName(''); // Reset workspace name input
         setDescription("")
         setOpen(false);
-        router.push(`/user/${userId}/workspace/${workspaceName}/dashboard`)
+        window.location.href=`/user/${userId}/workspace/${workspaceName}/${response.data.id}/dashboard`
       } else {
         setError(response.data.error || 'Workspace creation failed');
       }

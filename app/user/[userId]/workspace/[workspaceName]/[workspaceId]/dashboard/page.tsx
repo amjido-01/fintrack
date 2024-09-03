@@ -1,5 +1,5 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import axios from 'axios';
@@ -23,7 +23,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import ExpensesDialog from '@/components/ExpensesDialog';
 import { Total } from '@/components/Total';
 import {
@@ -42,6 +42,7 @@ import { Search } from "@/components/search"
 import WorkspaceSwitcher from "@/components/workspace-switcher"
 import { UserNav } from "@/components/user-nav"
 import WorkSpaceDialog from '@/components/WorkSpaceDialog';
+import { getSession } from 'next-auth/react';
 
 // export const metadata: Metadata = {
 //   title: "Dashboard",
@@ -55,6 +56,7 @@ const page = () => {
     const [open, setOpen] = useState(false);
     const {workspaceName} = useParams();
     const { data: session, status } = useSession();
+    const [totalExpenses, setTotalExpenses] = useState(0);
     // const [workspaceData, setWorkspaceData] = useState(null);
 
     // const getWorkspaceData = async () => {
@@ -62,11 +64,29 @@ const page = () => {
     //     return res.data;
     //     // setWorkspaceData(res.data);
     // }
-
+    let {workspaceId}  = useParams()
+    console.log("my id here: ", workspaceId);
+    
     const getWorkspaces = async () => {
       const res = await axios.get(`/api/workspace`);
       return res.data;
     }
+    const getWorkspace = async () => {
+      const res = await axios.get(`/api/get-workspace/${workspaceId}`);
+      return res.data;
+    }
+    // {
+    //   expenses: [{},{},],
+
+    // }
+
+    useEffect(() => {
+
+    // calculations do them here 
+    const total = currentWorkSpace?.expenses.reduce((acc, expense) => acc + expense.amount, 0);
+    setTotalExpenses(totalExpenses);
+
+    }, [workspaceId])
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -77,20 +97,27 @@ const page = () => {
   
     
     
-    const {data: workspaces, isLoading, error} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
+    const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
+    const {data: currentWorkSpace, isLoading:currentLoading, error:currentError,} = useQuery(
+      {queryKey: ['workspaces'], queryFn: getWorkspaces});
+    
     
     if (isLoading) return <div>Loading...</div>;
+    if (workspaces) console.log(workspaces, "my data")
     if (error) return <div>Error: {error.message}</div>;
     if (!session) return <p>No active session</p>;
+    console.log(session.user.id);
+    
     console.log(session.user)
-
+    const userId = session?.user?.id
+    
     return (
       <>
        
         <div className="flex-col md:flex ">
           <div className="border-b">
             <div className="flex h-16 items-center px-4">
-              <WorkspaceSwitcher workspaces={workspaces} />
+              <WorkspaceSwitcher workspaces={workspaces}  />
               <MainNav className="mx-6" />
              
               <div className="ml-auto flex items-center space-x-4">
@@ -106,7 +133,7 @@ const page = () => {
               <div className='flex items-center  space-x-2 mb-2 md:mb-0'>
               <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
               <div>
-              <ExpensesDialog />
+              <ExpensesDialog userId={userId} workspaceId={workspaceId} />
               </div>
               </div>
 

@@ -52,21 +52,20 @@ const Signin = () => {
 
             if (profileData.hasWorkspace) {
                 const lastWorkspace = profileData.lastWorkspace;
+                console.log(lastWorkspace.id, "from login page");
+                
                 setData({
                     email: "",
                     password: "",
                 });
                 setLoading(false)
-                router.push(`/user/${userId}/workspace/${lastWorkspace.workspaceName}/dashboard`);
-                // window.location.href = `/user/${userId}/workspace/${lastWorkspace.workspaceName}/dashboard`;
-                // window.location.href = "/dashboard"
+                router.push(`/user/${userId}/workspace/${lastWorkspace.workspaceName}/${lastWorkspace.id}/dashboard`);
             } else {
                setData({
                     email: "",
                     password: "",
                 });
                 router.push("/createworkspace")
-                // window.location.href = "/createworkspace"
             }
         } else {
             alert("Incorrect email or password")

@@ -48,7 +48,9 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Workspace } from "@prisma/client"
-
+import { useParams, useSearchParams } from "next/navigation"
+import { boolean } from "zod"
+import { get } from "http"
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
@@ -56,15 +58,27 @@ interface TeamSwitcherProps extends PopoverTriggerProps {
   workspaces: Workspace[];
 }
 
-export default function WorkspaceSwitcher({ className, workspaces }: TeamSwitcherProps) {
+
+export default function WorkspaceSwitcher({ className, workspaces, getWorkspaces }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false)
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
-  const [selectedWorkspace, setSelectedWorkspace] = React.useState<Workspace>(workspaces[0])
+ 
+  
 
-  console.log(selectedWorkspace.id);
+  // console.log(selectedWorkspace.id);
   console.log(workspaces);
+
+const {workspaceId}  = useParams()
+console.log("my id here: ", workspaceId);
+
+const workspace = workspaces.filter(workspace => workspace.id == workspaceId)
+
+console.log("this is my id: ", workspace);
+const [selectedWorkspace, setSelectedWorkspace] = React.useState<Workspace>(workspace[0]);
+console.log("this is the selected: ", selectedWorkspace)
+
   
-  
+ 
 
   return (
     <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
@@ -79,13 +93,13 @@ export default function WorkspaceSwitcher({ className, workspaces }: TeamSwitche
           >
             <Avatar className="mr-2 h-5 w-5">
               <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedWorkspace.workspaceName}.png`}
-                alt={selectedWorkspace.workspaceName}
+                src={`https://avatar.vercel.sh/${selectedWorkspace?.workspaceName}.png`}
+                alt={selectedWorkspace?.workspaceName}
                 className="grayscale"
               />
               <AvatarFallback>W</AvatarFallback>
             </Avatar>
-            {workspaces.find((workspace) => workspace.id === selectedWorkspace.id)?.workspaceName}
+            {workspaces.find((workspace) => workspace.id === selectedWorkspace?.id)?.workspaceName}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -95,7 +109,7 @@ export default function WorkspaceSwitcher({ className, workspaces }: TeamSwitche
             <CommandList>
               <CommandEmpty>No workspace  found.</CommandEmpty>
 
-              {workspaces.map((workspace) => (
+              {workspaces?.map((workspace) => (
                 <CommandGroup className="" key={workspace.id}>
                     <CommandItem
                       key={workspace.id}
