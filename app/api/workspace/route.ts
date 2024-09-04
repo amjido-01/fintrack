@@ -72,6 +72,9 @@ export async function handler(req: NextRequest) {
         },
         orderBy: {
           lastActiveAt: 'desc'
+        },
+        include: {
+          expenses: true
         }
       })
       console.log(hasWorkSpace, "hasWorkspace")

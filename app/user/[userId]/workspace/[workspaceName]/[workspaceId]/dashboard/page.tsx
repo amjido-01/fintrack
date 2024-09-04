@@ -55,6 +55,7 @@ const page = () => {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const {workspaceName} = useParams();
+    const [workspaceExpense, setWorkspaceExpense] = useState([]);
     const { data: session, status } = useSession();
     const [totalExpenses, setTotalExpenses] = useState(0);
     // const [workspaceData, setWorkspaceData] = useState(null);
@@ -65,7 +66,7 @@ const page = () => {
     //     // setWorkspaceData(res.data);
     // }
     let {workspaceId}  = useParams()
-    console.log("my id here: ", workspaceId);
+    console.log("my id here: ", typeof workspaceId);
     
     const getWorkspaces = async () => {
       const res = await axios.get(`/api/workspace`);
@@ -73,6 +74,7 @@ const page = () => {
     }
     const getWorkspace = async () => {
       const res = await axios.get(`/api/get-workspace/${workspaceId}`);
+      console.log(res.data, "workspace data")
       return res.data;
     }
     // {
@@ -87,20 +89,22 @@ const page = () => {
     setTotalExpenses(totalExpenses);
 
     }, [workspaceId])
-
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      // setLoading(true);
-      alert("creata an expense")
-  
-    }
   
     
     
     const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
+
     const {data: currentWorkSpace, isLoading:currentLoading, error:currentError,} = useQuery(
-      {queryKey: ['workspaces'], queryFn: getWorkspaces});
+      {queryKey: ['workspace'], queryFn: getWorkspace});
     
+    // if (currentWorkSpace) console.log(currentWorkSpace, "my workspace data")
+      // pass workspace expenses to the workspace expenses state
+    if (currentWorkSpace) {
+        let curWorkspaceExpenses = currentWorkSpace?.expenses;
+        console.log(curWorkspaceExpenses);
+        
+      }
+      
     
     if (isLoading) return <div>Loading...</div>;
     if (workspaces) console.log(workspaces, "my data")
@@ -176,7 +180,7 @@ const page = () => {
                       </svg>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">$45,231.89</div>
+                      <div className="text-2xl font-bold">N{totalExpenses}</div>
                       <p className="text-xs text-muted-foreground">
                         +20.1% from last month
                       </p>
@@ -246,11 +250,11 @@ const page = () => {
                     <CardHeader>
                       <CardTitle>Recent Expenses</CardTitle>
                       <CardDescription>
-                        You have 265 expenses this month.
+                        You have {currentWorkSpace?.expenses.length} expenses this month.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <RecentExpenses />
+                      <RecentExpenses expenses={currentWorkSpace?.expenses} />
                     </CardContent>
                   </Card>
                 </div>

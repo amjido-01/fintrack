@@ -40,11 +40,18 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     const [note, setNote] = useState('')
     const [data, setData] = useState({})
 
+    console.log(workspaceId, "from dialog")
+    console.log(userId, "from dialog")
+    
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-
+        setLoading(true)
+        setError('')
+        console.log("am gettig called")
         if (!expenseName || !date || !amount || !category) {
           setError('All fields are required');
+          setLoading(false)
           return;
     }
 
@@ -59,15 +66,15 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
         userId
       })
 
-      if (!response.data.error) {
+      if (response.data && !response.data.error) {
         alert("expense created successfully")
+        console.log(response.data, "data of expense")
         setExpenseName('');
         setDate('');
         setAmount('');
-        setCategory('');
+        setCategory(categories[0]);
         setNote('');
         setOpen(false)
-        // window.location.href = `/user/${userId}/workspace/${workspaceId}/dashboard`
 
       } else {
         alert("Expense creation failed")
@@ -75,6 +82,8 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     } catch (error) {
       console.error('Error:', error);
       setError('An error occurred while submitting the form');
+    } finally {
+      setLoading(false);
     }
   }    
   return (

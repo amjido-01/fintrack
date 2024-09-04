@@ -9,6 +9,7 @@ import WorkSpaceDialog from '@/components/WorkSpaceDialog';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from "next-auth/react";
+import { useParams } from 'next/navigation';
 import axios from 'axios';
 import {
     Card,
@@ -21,6 +22,9 @@ import {
 
 const page = () => {
     const router = useRouter();
+    const { workspaceId } = useParams();
+    console.log("my id here: ", workspaceId);
+    
   const { data: session, status } = useSession();
 
    const [loading, setLoading] = useState(false);
@@ -46,11 +50,12 @@ const page = () => {
           
           // Check if the request was successful
           if (response.status === 201) {
+            const workspaceId = response.data.id
             alert('Workspace created successfully');
             setWorkspaceName(''); // Reset workspace name input
             setOpen(false);
             // router.push(`/user/${userId}workspace/${workspaceName}`)
-            router.push(`/user/${userId}/workspace/${workspaceName}/dashboard`)
+            router.push(`/user/${userId}/workspace/${workspaceName}/${workspaceId}/dashboard`)
             // router.push('/dashboard')
           } else {
             setError(response.data.error || 'Workspace creation failed');

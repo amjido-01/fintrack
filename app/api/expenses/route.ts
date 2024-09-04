@@ -9,24 +9,25 @@ export async function handler(req: NextRequest, res: NextResponse) {
     if (!session) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         // return NextResponse.redirect(new URL("/login", req.url));
-    }
-
-
-  const userId = session.user.id;
-  console.log("User ID: from backend", userId);
+    }    
 
     // const userId = session?.user?.id;
 
     if (req.method === "POST") {
         try {
+            console.log("hello world")
+            // const body = await req.json();
             const body = await req.json();
-            const { expenseName, date, amount, category, note, workspaceId } = body;
-
-            if (!workspaceId) {
-                return NextResponse.json({ error: "Workspace ID is required" }, { status: 400 });
+            console.log('Received request body:', body);
+        
+            const { expenseName, date, amount, category, note, workspaceId, userId } = body;
+        
+            if (!workspaceId || !userId) {
+                console.error('Missing workspaceId or userId');
+                return new Response(JSON.stringify({ error: 'Missing workspaceId or userId' }), { status: 400 });
               }
-
-            if (!expenseName || !date || !amount || !category) {
+              
+            if (!expenseName || !date || !amount || !category || !userId || !workspaceId) {
                 return NextResponse.json({ error: "All fields are required" }, { status: 400 })
             }
 
@@ -53,7 +54,9 @@ export async function handler(req: NextRequest, res: NextResponse) {
             console.error("Error creating expense:", error);
             return NextResponse.json({ error: "Internal server error" }, { status: 500 });
         }
-    } else if (req.method === "GET") {
+    }
+     else if (req.method === "GET") {
+        const userId = session.user.id
         try {
             const expense = await prisma.expense.findMany({
                 where: {userId: userId},
