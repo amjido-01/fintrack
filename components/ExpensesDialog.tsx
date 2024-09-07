@@ -131,14 +131,14 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     </div>
     <div className="mt-1">
     <Label htmlFor="category">Category</Label>
-      <Select>
+      <Select value={category} onValueChange={setCategory}>
       <SelectTrigger>
       <SelectValue placeholder="Select a category" />
       </SelectTrigger>
       <SelectContent>
-        {categories.map((category) => (
-          <SelectItem key={category} value={category}>
-            {category}
+        {categories.map((cat) => (
+          <SelectItem key={cat} value={cat}>
+            {cat}
           </SelectItem>
         ))}
       </SelectContent>

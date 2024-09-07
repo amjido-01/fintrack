@@ -1,21 +1,9 @@
 "use client"
 import React, { useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useSession } from "next-auth/react";
 import axios from 'axios';
-import { Metadata } from "next"
-import Image from "next/image"
 import { useQuery } from '@tanstack/react-query';
-import Layout from '@/components/Layout';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
 import { TransactionsList } from '@/components/TransactionsList';
 import {
   Card,
@@ -40,31 +28,26 @@ import { RecentExpenses } from "@/components/RecentExpenses"
 import UserAvatar from '@/components/ui/UserAvatar';
 import { Search } from "@/components/search"
 import WorkspaceSwitcher from "@/components/workspace-switcher"
-import { UserNav } from "@/components/user-nav"
-import WorkSpaceDialog from '@/components/WorkSpaceDialog';
-import { getSession } from 'next-auth/react';
 
-// export const metadata: Metadata = {
-//   title: "Dashboard",
-//   description: "Example dashboard app built using the components.",
-// }
 
+interface Expense {
+  id: string;
+  expenseName: string;
+  amount: number;
+  date: string;
+  category: string;
+  note: string;
+  workspaceId: string;
+}
 
 const page = () => {
     // const searchParams  = useSearchParams();
-    const router = useRouter();
-    const [open, setOpen] = useState(false);
-    const {workspaceName} = useParams();
     const [workspaceExpense, setWorkspaceExpense] = useState([]);
     const { data: session, status } = useSession();
     const [totalExpenses, setTotalExpenses] = useState(0);
+    const [topCategory, setTopCategory] = useState("");
     // const [workspaceData, setWorkspaceData] = useState(null);
 
-    // const getWorkspaceData = async () => {
-    //     const res = await axios.get(`/api/workspac/${workspaceName}`);
-    //     return res.data;
-    //     // setWorkspaceData(res.data);
-    // }
     let {workspaceId}  = useParams()
     console.log("my id here: ", typeof workspaceId);
     
@@ -72,39 +55,57 @@ const page = () => {
       const res = await axios.get(`/api/workspace`);
       return res.data;
     }
+
     const getWorkspace = async () => {
       const res = await axios.get(`/api/get-workspace/${workspaceId}`);
-      console.log(res.data, "workspace data")
       return res.data;
     }
-    // {
-    //   expenses: [{},{},],
-
-    // }
-
-    useEffect(() => {
-
-    // calculations do them here 
-    const total = currentWorkSpace?.expenses.reduce((acc, expense) => acc + expense.amount, 0);
-    setTotalExpenses(totalExpenses);
-
-    }, [workspaceId])
   
-    
-    
     const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
 
     const {data: currentWorkSpace, isLoading:currentLoading, error:currentError,} = useQuery(
       {queryKey: ['workspace'], queryFn: getWorkspace});
     
-    // if (currentWorkSpace) console.log(currentWorkSpace, "my workspace data")
-      // pass workspace expenses to the workspace expenses state
-    if (currentWorkSpace) {
-        let curWorkspaceExpenses = currentWorkSpace?.expenses;
-        console.log(curWorkspaceExpenses);
-        
+
+
+      // function to calculate the top category from expenses
+      const trackTopCategory = (expenses: Expense[]) => {
+        // Group expenses by category and sum up the amounts
+
+        const categoryTotals = expenses.reduce((acc: Record<string, number>, expense: Expense) => {
+          const { category, amount } = expense;
+
+          if (!acc[category]) {
+            acc[category] = 0;
+          }
+
+          acc[category] += amount;
+          return acc;
+        }, {});
+
+        console.log("categoryTotals", categoryTotals)
+
+         // Find the category with the highest total expense
+         const topCategory = Object.keys(categoryTotals).reduce((top, current) => {
+          // Compare totals and return the category with the higher total
+          return categoryTotals[current] > categoryTotals[top] ? current : top;
+        }, Object.keys(categoryTotals)[0]);
+
+        setTopCategory(topCategory);
       }
+    
       
+      useEffect(() => {
+        if (currentWorkSpace && currentWorkSpace?.expenses) {
+          const total = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0);
+          setTotalExpenses(total);
+
+
+          // Call the function to calculate the top category
+          trackTopCategory(currentWorkSpace.expenses);
+        }
+      }, [currentWorkSpace])
+    
     
     if (isLoading) return <div>Loading...</div>;
     if (workspaces) console.log(workspaces, "my data")
@@ -166,21 +167,10 @@ const page = () => {
                       <CardTitle className="text-sm font-medium">
                         Total Expenses
                       </CardTitle>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                      >
-                        <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                      </svg>
+                      <span className='text-gray-400'>N</span>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">N{totalExpenses}</div>
+                      <div className="text-2xl font-bold">N {totalExpenses}</div>
                       <p className="text-xs text-muted-foreground">
                         +20.1% from last month
                       </p>
@@ -231,7 +221,7 @@ const page = () => {
                       </svg>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold">Food</div>
+                      <div className="text-2xl font-bold">{topCategory}</div>
                       <p className="text-xs text-muted-foreground">
                         +19% from last month
                       </p>
@@ -265,7 +255,7 @@ const page = () => {
                     <CardTitle>Transaction History</CardTitle>
                   </CardHeader>
                   <CardContent className="pl-2">
-                    <TransactionsList />
+                    <TransactionsList expenses={currentWorkSpace?.expenses} />
                   </CardContent>
                   </Card>
                     </div>

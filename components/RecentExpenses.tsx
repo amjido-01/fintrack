@@ -19,7 +19,7 @@ import {
   export function RecentExpenses({ expenses}: { expenses: Expense[] }) {
     const onlyTenExpenses = expenses?.slice(0, 5)
     const expenseList = onlyTenExpenses?.map(expense => 
-      <div className="flex items-center">
+      <li key={expense.id} className="flex items-center list-none">
       <Avatar className="h-9 w-9">
         <AvatarImage src="/avatars/01.png" alt="Avatar" />
         <AvatarFallback>OM</AvatarFallback>
@@ -33,13 +33,13 @@ import {
       </div>
       
       <div className="ml-auto font-medium">N{expense.amount}</div>
-    </div>
+      </li>
     )
 
     return (
-      <div className="space-y-8">
+      <ul className="space-y-8">
         {expenseList}
-      </div>
+      </ul>
     )
   }
 
