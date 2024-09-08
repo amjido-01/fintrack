@@ -27,14 +27,6 @@ const Navbar = () => {
       {/* <img src="https://flowbite.com/docs/images/logo.svg" className="h-8" alt="Flowbite Logo" /> */}
       <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">FinTrack</span>
   </Link>
-
-    {/* {session?.user && 
-      <ul className='md:flex gap-10 hidden'>
-        {NavLinks.map((links) => {
-          return (<li key={links.id}><Link className={isActive(links.path) ? 'underline underline-offset-4 decoration-2 decoration-primary' : 'text-white'} href={links.path}>{links.name}</Link></li>);
-        })}
-      </ul>
-    } */}
     
     <div className="flex gap-8 md:order-2 space-x-3 md:space-x-0">
     <div><ModeToggle /></div>

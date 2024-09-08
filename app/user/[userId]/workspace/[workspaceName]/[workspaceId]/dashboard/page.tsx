@@ -19,11 +19,11 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
+} from "@/components/ui/tabs";
+import {ExpensesByCategory} from '@/components/ExpensesByCategory';
 import { useState } from 'react';
 import { CalendarDateRangePicker } from "@/components/date-range-picker"
 import { MainNav } from "@/components/main-nav"
-import { Overview } from "@/components/overview"
 import { RecentExpenses } from "@/components/RecentExpenses"
 import UserAvatar from '@/components/ui/UserAvatar';
 import { Search } from "@/components/search"
@@ -235,7 +235,7 @@ const page = () => {
                   </div>
                 <div className="flex flex-col md:flex-row gap-4">
 
-                      <Overview />  
+                <ExpensesByCategory/>
                   <Card className="w-full md:w-1/2">
                     <CardHeader>
                       <CardTitle>Recent Expenses</CardTitle>
