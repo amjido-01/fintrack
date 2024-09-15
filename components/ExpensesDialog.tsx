@@ -7,6 +7,8 @@ import { Textarea } from './ui/textarea';
 import { Loader2 } from "lucide-react";
 import {PlusCircle} from "lucide-react"
 import axios from 'axios';
+import Popover from './Popover';
+
 import {
     Dialog,
     DialogContent,
@@ -23,7 +25,7 @@ import {
 
     interface Expense {
       userId: string;
-      workspaceId: string;
+      workspaceId: string | string[];
       onExpenseAdded: () => void;
     }
 
@@ -40,10 +42,11 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
     const [loading, setLoading] = useState(false)
     const [note, setNote] = useState('')
     const [data, setData] = useState({})
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
 
     console.log(workspaceId, "from dialog")
     console.log(userId, "from dialog")
-    
+
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -68,7 +71,8 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
       })
 
       if (response.data && !response.data.error) {
-        alert("expense created successfully")
+        // alert("expense created successfully")
+        setIsDialogOpen(true)
         console.log(response.data, "data of expense")
         setExpenseName('');
         setDate('');
@@ -76,8 +80,6 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
         setCategory(categories[0]);
         setNote('');
         onExpenseAdded()
-        setOpen(false)
-
       } else {
         alert("Expense creation failed")
       }
@@ -87,7 +89,12 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
     } finally {
       setLoading(false);
     }
-  }    
+  }   
+  
+  const handleAlertDialogOk = () => {
+    setIsDialogOpen(false); // Close the alert dialog
+    setOpen(false); // Close the form dialog
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
     <DialogTrigger className='py-2 px-4 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>
@@ -165,10 +172,25 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
     </Button> : <Button type="submit" className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600"> Add Expense </Button>}
 
     </div>
-  </form>
+      </form>
+      <Popover isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
+      {/* <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Expense Added Successfully</AlertDialogTitle>
+      <AlertDialogDescription>
+      Your expense has been created successfully.
+      </AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogAction onClick={handleAlertDialogOk}>Ok</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog> */}
+
       </div>
     </DialogContent>
-  </Dialog>
+   </Dialog>
   )
 }
 

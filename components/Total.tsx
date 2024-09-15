@@ -18,7 +18,14 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = {
+
+// type Timeframe = 'weekly' | 'monthly' | 'yearly';
+type ChartDataPoint = {
+  name: string;
+  expenses: number;
+  income: number
+}
+const chartData: Record<Timeframe, ChartDataPoint[]> = {
   weekly: [
     { name: "Mon", expenses: 120, income: 100 },
     { name: "Tue", expenses: 90, income: 80 },
@@ -60,7 +67,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 export function Total() {
-  const [timeframe, setTimeframe] = useState("weekly")
+  const [timeframe, setTimeframe] = useState<Timeframe>('weekly')
   return (
     <Card className="col-span-4">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -140,3 +147,6 @@ export function Total() {
     </Card>
   )
 }
+
+
+type Timeframe = 'weekly' | 'monthly' | 'yearly';

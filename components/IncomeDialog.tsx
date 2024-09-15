@@ -24,7 +24,7 @@ import axios from 'axios';
 
 interface Expense {
   userId: string;
-  workspaceId: string;
+  workspaceId: string | string[];
   onIncomeAdded: () => void;
 }
 

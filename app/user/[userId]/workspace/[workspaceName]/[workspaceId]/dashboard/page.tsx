@@ -122,8 +122,9 @@ const page = () => {
           setTotalIncome(totalIncome);
 
           const averageDailyExpense = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0) / currentWorkSpace?.expenses.length;
-          setAverageDailyExpense(averageDailyExpense);
-
+          const rounded = Math.round(averageDailyExpense * 100) / 100;
+          setAverageDailyExpense(rounded);
+          
           // Call the function to calculate the top category
           trackTopCategory(currentWorkSpace.expenses);
         }
@@ -195,7 +196,7 @@ const page = () => {
             </div>
             
               {hasIncome ? 
-            <div className='border-2 border-yellow-400'>
+            <div className=''>
             <Tabs defaultValue="overview" className="space-y-4">
               <TabsList>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
