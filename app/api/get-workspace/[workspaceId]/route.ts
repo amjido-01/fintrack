@@ -16,6 +16,7 @@ export async function GET(req: NextRequest, { params }: { params: { workspaceId:
             where: {id: workspaceId},
             include: {
                 expenses: true,
+                income: true,
             }
         })
     

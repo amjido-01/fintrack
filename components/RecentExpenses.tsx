@@ -13,6 +13,7 @@ import {
     category: string;
     note: string;
     workspaceId: string;
+    onExpenseAdded: () => void;
   }
 
   

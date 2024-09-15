@@ -59,7 +59,7 @@ interface TeamSwitcherProps extends PopoverTriggerProps {
 }
 
 
-export default function WorkspaceSwitcher({ className, workspaces, getWorkspaces }: TeamSwitcherProps) {
+export default function WorkspaceSwitcher({ className, workspaces }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false)
   const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
  

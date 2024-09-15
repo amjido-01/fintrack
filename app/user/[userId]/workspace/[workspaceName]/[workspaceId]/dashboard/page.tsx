@@ -20,6 +20,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { Button } from '@/components/ui/button';
+import { DashboardCard } from '@/components/DashboardCard';
 import {ExpensesByCategory} from '@/components/ExpensesByCategory';
 import { useState } from 'react';
 import { CalendarDateRangePicker } from "@/components/date-range-picker"
@@ -28,8 +30,8 @@ import { RecentExpenses } from "@/components/RecentExpenses"
 import UserAvatar from '@/components/ui/UserAvatar';
 import { Search } from "@/components/search"
 import WorkspaceSwitcher from "@/components/workspace-switcher"
-
-
+import IncomeDialog from '@/components/IncomeDialog';
+import {BadgeDollarSign} from "lucide-react"
 interface Expense {
   id: string;
   expenseName: string;
@@ -40,11 +42,23 @@ interface Expense {
   workspaceId: string;
 }
 
+interface Income {
+  id: string;
+  incomeSource: string;
+  amount: number;
+  date: string;
+  category: string;
+  description: string;
+  workspaceId: string;
+}
+
 const page = () => {
     // const searchParams  = useSearchParams();
     const [workspaceExpense, setWorkspaceExpense] = useState([]);
     const { data: session, status } = useSession();
     const [totalExpenses, setTotalExpenses] = useState(0);
+    const [totalIncome, setTotalIncome] = useState(0);
+    const [averageDailyExpense, setAverageDailyExpense] = useState(0);
     const [topCategory, setTopCategory] = useState("");
     // const [workspaceData, setWorkspaceData] = useState(null);
 
@@ -63,9 +77,13 @@ const page = () => {
   
     const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
 
-    const {data: currentWorkSpace, isLoading:currentLoading, error:currentError,} = useQuery(
-      {queryKey: ['workspace'], queryFn: getWorkspace});
-    
+    const {data: currentWorkSpace, isLoading:currentLoading, error:currentError, refetch:refetchCurrentWorkspace} = useQuery(
+      {queryKey: ['workspace', workspaceId], queryFn: getWorkspace});
+      
+      console.log(currentWorkSpace, "currentWorkSpace");
+
+      // check if the currentworkspace has income deposits
+      const hasIncome = currentWorkSpace?.income.length > 0;
 
 
       // function to calculate the top category from expenses
@@ -100,6 +118,11 @@ const page = () => {
           const total = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0);
           setTotalExpenses(total);
 
+          const totalIncome = currentWorkSpace?.income.reduce((acc: number, income: Income) => acc + income.amount, 0);
+          setTotalIncome(totalIncome);
+
+          const averageDailyExpense = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0) / currentWorkSpace?.expenses.length;
+          setAverageDailyExpense(averageDailyExpense);
 
           // Call the function to calculate the top category
           trackTopCategory(currentWorkSpace.expenses);
@@ -115,11 +138,28 @@ const page = () => {
     
     console.log(session.user)
     const userId = session?.user?.id
+
+  const TopCategorySvg = (<svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="2"
+    className="h-4 w-4 text-muted-foreground"
+  >
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>)
+
     
     return (
       <>
        
         <div className="flex-col md:flex ">
+
           <div className="border-b">
             <div className="flex h-16 items-center px-4">
               <WorkspaceSwitcher workspaces={workspaces}  />
@@ -131,14 +171,21 @@ const page = () => {
               </div>
             </div>
           </div>
+
+
           <div className="flex-1 space-y-4 p-8 pt-6 ">
 
             <div className="flex flex-col justify-start md:flex-row md:items-center md:justify-between space-y-2">
 
               <div className='flex items-center  space-x-2 mb-2 md:mb-0'>
               <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+
+              {hasIncome && <div>
+              <ExpensesDialog onExpenseAdded={refetchCurrentWorkspace} userId={userId} workspaceId={workspaceId} />
+              </div>}
+
               <div>
-              <ExpensesDialog userId={userId} workspaceId={workspaceId} />
+                <IncomeDialog userId={userId} workspaceId={workspaceId}  onIncomeAdded={refetchCurrentWorkspace}/>
               </div>
               </div>
 
@@ -146,10 +193,9 @@ const page = () => {
                 <CalendarDateRangePicker />
               </div>
             </div>
-
-
-            <div>
-            </div>
+            
+              {hasIncome ? 
+            <div className='border-2 border-yellow-400'>
             <Tabs defaultValue="overview" className="space-y-4">
               <TabsList>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -162,72 +208,10 @@ const page = () => {
               </TabsList>
               <TabsContent value="overview" className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                        Total Expenses
-                      </CardTitle>
-                      <span className='text-gray-400'>N</span>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">N {totalExpenses}</div>
-                      <p className="text-xs text-muted-foreground">
-                        +20.1% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">
-                      Average Daily Expense
-                      </CardTitle>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                      >
-                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                        <circle cx="9" cy="7" r="4" />
-                        <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">+2350</div>
-                      <p className="text-xs text-muted-foreground">
-                        +180.1% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Top Category</CardTitle>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        className="h-4 w-4 text-muted-foreground"
-                      >
-                        <rect width="20" height="14" x="2" y="5" rx="2" />
-                        <path d="M2 10h20" />
-                      </svg>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">{topCategory}</div>
-                      <p className="text-xs text-muted-foreground">
-                        +19% from last month
-                      </p>
-                    </CardContent>
-                  </Card>
-
+                  <DashboardCard cardTitle="Total Income" cardContent={totalIncome} cardIcon={<BadgeDollarSign />} />
+                  <DashboardCard cardTitle="Total Expenses" cardContent={totalExpenses} cardIcon={<BadgeDollarSign />} />
+                  <DashboardCard cardTitle='Top Category' cardContent={topCategory} cardIcon={TopCategorySvg} />
+                  <DashboardCard cardTitle='Average Daily Expense' cardContent={averageDailyExpense} cardIcon={<BadgeDollarSign />} />
                    
                 </div>
                 <div>
@@ -262,7 +246,11 @@ const page = () => {
                 </div>
               </TabsContent>
             </Tabs>
+            </div> : <div><h2>please deposite some money to track your expenses</h2></div>}
+
           </div>
+
+
         </div>
       </>
   )

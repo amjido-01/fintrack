@@ -26,6 +26,7 @@ model User {
   sessions      Session[]
   workspaces    Workspace[]
   expenses       Expense[]
+  income         Income[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -38,6 +39,7 @@ model Workspace {
   createdBy     User      @relation(fields: [createdById], references: [id])
   createdById   String
   expenses      Expense[]  // Relation to the Expense model
+  income        Income[]
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   lastActiveAt  DateTime @default(now())
@@ -60,6 +62,22 @@ model Expense {
   // Other fields
 }
 
+model Income {
+  id          String     @id @default(uuid())
+  date       DateTime
+  incomeSource   String
+  category       String
+  amount        Float
+  description  String
+  createdAt   DateTime   @default(now())
+   workspace   Workspace  @relation(fields: [workspaceId], references: [id])
+   workspaceId String
+    user        User       @relation(fields: [userId], references: [id])
+     userId      String
+       @@index([userId])
+  @@index([workspaceId])
+}
+ 
 model Account {
   userId            String
   type              String

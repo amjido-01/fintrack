@@ -74,8 +74,9 @@ export async function handler(req: NextRequest) {
           lastActiveAt: 'desc'
         },
         include: {
-          expenses: true
-        }
+          expenses: true,
+          income: true
+        },
       })
       console.log(hasWorkSpace, "hasWorkspace")
       return NextResponse.json(hasWorkSpace, { status: 200 });
