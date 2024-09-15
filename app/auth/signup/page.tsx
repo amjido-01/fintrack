@@ -3,20 +3,22 @@ import React from 'react'
 import { useState } from 'react'
 import Link from 'next/link';
 import axios from 'axios';
-import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useToast } from '@/components/ui/use-toast';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { signIn } from 'next-auth/react';
+import Popover from '@/components/Popover';
 
 const Signup = () => {
     const router = useRouter();
-    const { toast } = useToast();
-    const [loading, setLoading] = useState(false);  
+    const [loading, setLoading] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertMessage, setAlertMessage] = useState('')
+    const [error, SetError] = useState('')
 
     const [data, setData] = useState({
         email: "",
@@ -27,28 +29,18 @@ const Signup = () => {
 
       const { email, password, name, userName } = data;
 
-      function showToast(title: string, description: string, variant: "default" | "destructive") {
-        toast({
-            title: title,
-            description: description,
-            variant: variant,
-        })
-      }
-
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.value)
         setData({ ...data, [e.target.name]: e.target.value });
       };
 
       const registerUser = async (e: any) => {
         e.preventDefault();
         setLoading(true)
-        console.log(data, "data from sign up form page");
         
 
         if(!email || !password || !name || !userName) {
             setLoading(false)
-            alert("Please enter an email and password")
+            SetError("All fields are required")
             return;
         }
 
@@ -58,9 +50,9 @@ const Signup = () => {
             name,
             userName,
         }).then(() => {
-
-            showToast("Success", "You have been registered, now you can login", "default")
-            router.push("/auth/signin")
+            setIsDialogOpen(true);
+            setAlertTitle('Registration Successful');
+            setAlertMessage('You can now log in with your credentials.');
             setData({
                 email: "",
                 password: "",
@@ -68,10 +60,20 @@ const Signup = () => {
                 userName: "",
             })
         }).catch(() => {
-            alert("failed to register")
+            setAlertTitle('Error');
+            setAlertMessage("An error occurred while submitting the form. Please try again.");
+            setIsDialogOpen(true);
             setLoading(false)
         })
 
+      }
+
+      function handleCloseDialog() {
+        setIsDialogOpen(false);
+        setLoading(false)
+        if (alertTitle === 'Registration Successful') {
+        router.push("/auth/signin")
+        }
       }
 
   return (
@@ -117,6 +119,7 @@ const Signup = () => {
 
         <form onSubmit={registerUser}>
         <div className="mt-4 flex flex-col md:flex-row md:justify-between">
+            {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className='w-[48%]'>
             <Label className='block mb-2 text-sm font-medium' htmlFor="name">Name</Label>
             <Input 
@@ -188,6 +191,7 @@ const Signup = () => {
             <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
         </div>
         </form>
+        <Popover alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleCloseDialog} />
         </div>
 
     </div>

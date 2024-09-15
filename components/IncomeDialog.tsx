@@ -2,7 +2,6 @@ import React from 'react'
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -12,6 +11,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue, } from './ui/select';
+    import Popover from './Popover';
   import { Loader2 } from "lucide-react";
   import {PlusCircle} from "lucide-react"
 import { useState } from 'react';
@@ -39,14 +39,15 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) =
     const [date, setDate] = useState('')
     const [description, setDescription] = useState('')
     const [category, setCategory] = useState(categories[0])
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState('')
+    const [alertMessage, setAlertMessage] = useState('')
 
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setLoading(true)
       setError('')
-      console.log("am getting called")
-      console.log(userId, workspaceId);
       
       if (!incomeSource || !date || !amount || !category || !description) {
         setError('All fields are required');
@@ -66,25 +67,35 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) =
         })
         console.log(response.data)
         if (response.data && !response.data.error) {
-          alert("expense created successfully")
-          console.log(response.data, "data of expense")
+          setAlertTitle('Income Added Successfully');
+          setAlertMessage('Your new income has been added successfully.');
+          setIsDialogOpen(true)
           setIncomeSource('');
           setDate('');
           setAmount('');
           setCategory(categories[0]);
           setDescription('');
-          setOpen(false)
-          onIncomeAdded(); // Refetch workspace data
+          onIncomeAdded();
         } else {
-          alert("Expense creation failed")
+         setAlertTitle('Error');
+         setAlertMessage('Failed to create expense.');
+         setIsDialogOpen(true)
         }
       } catch (error) {
-        console.error('Error:', error);
-        setError('An error occurred while submitting the form');
+        setAlertTitle('Error');
+        setAlertMessage('An error occurred while submitting the form');
+        setIsDialogOpen(true);
       } finally {
         setLoading(false);
       }
 
+    }
+
+    function handleAlertDialogOk() {
+      setIsDialogOpen(false);
+      setOpen(false); 
+      setError('')
+      setLoading(false)
     }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -94,11 +105,7 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) =
     </DialogTrigger>
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Create new Expense</DialogTitle>
-        <DialogDescription>
-          This action cannot be undone. This will permanently delete your account
-          and remove your data from our servers.
-        </DialogDescription>
+        <DialogTitle>Add New Income</DialogTitle>
       </DialogHeader>
       <div>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -164,6 +171,7 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) =
 
     </div>
   </form>
+      <Popover alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
       </div>
     </DialogContent>
   </Dialog>

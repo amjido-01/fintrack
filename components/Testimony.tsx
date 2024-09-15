@@ -10,7 +10,7 @@ type TestimonyProps = {
 const Testimony: React.FC<TestimonyProps> = ({img, name, role, testimony}) => {
   return (
     <div>
-        <div className="shrink-0 px-2 w-[500px] grid grid-cols-[7rem,_1fr] rounded-lg overflow-hidden relative">
+        <div className="shrink-0 px-2 w-[500px] grid grid-cols-[7rem,_1fr] rounded-lg overflow-hidden relative ">
                 <Image className='w-full h-44 object-cover' src={img} width={500} height={500} alt="testimonial" />
                 <div className="bg-slate-900 text-slate-50 p-4">
                     <span className="block font-semibold text-lg mb-1">{name}</span>

@@ -5,31 +5,28 @@ import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button"
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2 } from 'lucide-react';
-import WorkSpaceDialog from '@/components/WorkSpaceDialog';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from "next-auth/react";
 import { useParams } from 'next/navigation';
 import axios from 'axios';
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
+import Popover from '@/components/Popover';
+import { set } from 'date-fns';
 
 const page = () => {
     const router = useRouter();
     const { workspaceId } = useParams();
-    console.log("my id here: ", workspaceId);
-    
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [alertTitle, setAlertTitle] = useState('')
+    const [alertMessage, setAlertMessage] = useState('')
+    const [workspaceIdValue, setWorkspaceIdValue] = useState('')
+
   const { data: session, status } = useSession();
 
    const [loading, setLoading] = useState(false);
    const [workspaceName, setWorkspaceName] = useState('');
    const [description, setDescription] = useState('');
+   const [workspaceNameValue, setWorkspaceNameValue] = useState('');
    const [error, setError] = useState('');
 //    const [open, setOpen] = useState(false);
 
@@ -51,27 +48,46 @@ const page = () => {
           // Check if the request was successful
           if (response.status === 201) {
             const workspaceId = response.data.id
-            alert('Workspace created successfully');
+            const workspaceNameValue = response.data.workspaceName;
+            setWorkspaceIdValue(workspaceId);
+            setWorkspaceNameValue(workspaceNameValue)
+            setAlertTitle('Workspace Created Successfully');
+            setAlertMessage('Your workspace has been created successfully.');
             setWorkspaceName(''); // Reset workspace name input
-            setOpen(false);
-            // router.push(`/user/${userId}workspace/${workspaceName}`)
-            router.push(`/user/${userId}/workspace/${workspaceName}/${workspaceId}/dashboard`)
-            // router.push('/dashboard')
+            setDescription(''); // Reset description input
+            setLoading(false);
+            setIsDialogOpen(true);
           } else {
+            
             setError(response.data.error || 'Workspace creation failed');
           }
         } catch (err) {
           setLoading(false);
           if (axios.isAxiosError(err) && err.response) {
             setError(err.response.data.error || 'Workspace creation failed');
+            setAlertTitle("Error");
+            setAlertMessage(err.response.data.error || "Workspace creation failed");
+            setIsDialogOpen(true);
+            setLoading(false);
           } else {
             setError('Workspace creation failed');
+          setAlertTitle("Error");
+          setAlertMessage("Workspace creation failed");
+          setIsDialogOpen(true);
+          setLoading(false);
           }
-          console.error(err);
+
+        }
+      }
+
+      const handleAlertDialogOk = () => {
+        setIsDialogOpen(false);
+        setLoading(false);
+        if (alertTitle === 'Workspace Created Successfully') {
+          router.push(`/user/${userId}/workspace/${workspaceNameValue}/${workspaceIdValue}/dashboard`)
         }
       }
     
-    const [open, setOpen] = React.useState(false)
     return (
         <div className='flex flex-col items-center justify-center min-h-screen py-2 sm:px-6 lg:px-8'>
           <div className="w-full max-w-sm mx-auto overflow-hidden rounded-lg shadow-md border-2">
@@ -112,6 +128,7 @@ const page = () => {
       </div>
 
         </form>
+        <Popover alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
     </div>
 </div>
         </div>

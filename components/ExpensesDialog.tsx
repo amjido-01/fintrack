@@ -12,7 +12,6 @@ import Popover from './Popover';
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
     DialogTrigger,
@@ -41,11 +40,9 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [note, setNote] = useState('')
-    const [data, setData] = useState({})
     const [isDialogOpen, setIsDialogOpen] = useState(false)
-
-    console.log(workspaceId, "from dialog")
-    console.log(userId, "from dialog")
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
 
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -71,9 +68,9 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
       })
 
       if (response.data && !response.data.error) {
-        // alert("expense created successfully")
+        setAlertTitle('Expense Added Successfully');
+        setAlertMessage('Your expense has been created successfully.');
         setIsDialogOpen(true)
-        console.log(response.data, "data of expense")
         setExpenseName('');
         setDate('');
         setAmount('');
@@ -81,10 +78,15 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
         setNote('');
         onExpenseAdded()
       } else {
-        alert("Expense creation failed")
+        setAlertTitle('Error');
+        setAlertMessage('Failed to create expense.');
+        setIsDialogOpen(true)
       }
     } catch (error) {
       console.error('Error:', error);
+      setAlertTitle('Error');
+      setAlertMessage('An error occurred while submitting the form.');
+      setIsDialogOpen(true);
       setError('An error occurred while submitting the form');
     } finally {
       setLoading(false);
@@ -92,8 +94,10 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
   }   
   
   const handleAlertDialogOk = () => {
-    setIsDialogOpen(false); // Close the alert dialog
-    setOpen(false); // Close the form dialog
+    setIsDialogOpen(false);
+    setOpen(false);
+    setError('')
+    setLoading(false) 
   };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -104,10 +108,6 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
     <DialogContent>
       <DialogHeader>
         <DialogTitle>Create new Expense</DialogTitle>
-        <DialogDescription>
-          This action cannot be undone. This will permanently delete your account
-          and remove your data from our servers.
-        </DialogDescription>
       </DialogHeader>
       <div>
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -173,21 +173,7 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
 
     </div>
       </form>
-      <Popover isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
-      {/* <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-  <AlertDialogContent>
-    <AlertDialogHeader>
-      <AlertDialogTitle>Expense Added Successfully</AlertDialogTitle>
-      <AlertDialogDescription>
-      Your expense has been created successfully.
-      </AlertDialogDescription>
-    </AlertDialogHeader>
-    <AlertDialogFooter>
-      <AlertDialogAction onClick={handleAlertDialogOk}>Ok</AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog> */}
-
+      <Popover alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
       </div>
     </DialogContent>
    </Dialog>

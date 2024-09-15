@@ -8,20 +8,27 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-    AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
-const Popover = ({isDialogOpen, setIsDialogOpen, handleAlertDialogOk}: any) => {
+
+  interface PopoverProps {
+    isDialogOpen: boolean;
+    setIsDialogOpen: (isDialogOpen: boolean) => void;
+    handleAlertDialogOk: () => void;
+    alertTitle: string;
+    alertDescription: string;
+  }
+const Popover: React.FC<PopoverProps> = ({isDialogOpen, setIsDialogOpen, handleAlertDialogOk, alertTitle, alertDescription}) => {
   return (
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>Expense Added Successfully</AlertDialogTitle>
+        <AlertDialogTitle>{alertTitle}</AlertDialogTitle>
         <AlertDialogDescription>
-        Your expense has been created successfully.
+        {alertDescription}
         </AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogAction onClick={handleAlertDialogOk}>Ok</AlertDialogAction>
+        <AlertDialogAction className='text-white' onClick={handleAlertDialogOk}>Ok</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

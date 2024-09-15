@@ -32,6 +32,7 @@ import { Search } from "@/components/search"
 import WorkspaceSwitcher from "@/components/workspace-switcher"
 import IncomeDialog from '@/components/IncomeDialog';
 import {BadgeDollarSign} from "lucide-react"
+import { Landmark } from 'lucide-react';
 interface Expense {
   id: string;
   expenseName: string;
@@ -58,6 +59,7 @@ const page = () => {
     const { data: session, status } = useSession();
     const [totalExpenses, setTotalExpenses] = useState(0);
     const [totalIncome, setTotalIncome] = useState(0);
+    const [balance, setBalance] = useState(0);
     const [averageDailyExpense, setAverageDailyExpense] = useState(0);
     const [topCategory, setTopCategory] = useState("");
     // const [workspaceData, setWorkspaceData] = useState(null);
@@ -115,12 +117,16 @@ const page = () => {
       
       useEffect(() => {
         if (currentWorkSpace && currentWorkSpace?.expenses) {
+          // subtract the total expenses from the total income
+          
           const total = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0);
           setTotalExpenses(total);
 
           const totalIncome = currentWorkSpace?.income.reduce((acc: number, income: Income) => acc + income.amount, 0);
           setTotalIncome(totalIncome);
 
+          const balance = totalIncome - total;
+          setBalance(balance);
           const averageDailyExpense = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0) / currentWorkSpace?.expenses.length;
           const rounded = Math.round(averageDailyExpense * 100) / 100;
           setAverageDailyExpense(rounded);
@@ -167,7 +173,7 @@ const page = () => {
               <MainNav className="mx-6" />
              
               <div className="ml-auto flex items-center space-x-4">
-                <Search />
+                {hasIncome && <Search />}
                 <UserAvatar />
               </div>
             </div>
@@ -191,7 +197,7 @@ const page = () => {
               </div>
 
               <div className="flex items-center space-x-2 mt-2 md:mt-2">
-                <CalendarDateRangePicker />
+                {hasIncome && <CalendarDateRangePicker />}
               </div>
             </div>
             
@@ -211,8 +217,8 @@ const page = () => {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <DashboardCard cardTitle="Total Income" cardContent={totalIncome} cardIcon={<BadgeDollarSign />} />
                   <DashboardCard cardTitle="Total Expenses" cardContent={totalExpenses} cardIcon={<BadgeDollarSign />} />
+                  <DashboardCard cardTitle='Remaining Balance' cardContent={balance} cardIcon={<BadgeDollarSign />} />
                   <DashboardCard cardTitle='Top Category' cardContent={topCategory} cardIcon={TopCategorySvg} />
-                  <DashboardCard cardTitle='Average Daily Expense' cardContent={averageDailyExpense} cardIcon={<BadgeDollarSign />} />
                    
                 </div>
                 <div>
@@ -247,7 +253,11 @@ const page = () => {
                 </div>
               </TabsContent>
             </Tabs>
-            </div> : <div><h2>please deposite some money to track your expenses</h2></div>}
+            </div> : <div><h1 className='text-center mt-20 text-2xl	text-bold capitalize text-primary md:text-3xl'>please deposite some money to track your expenses</h1>
+            <div className='flex justify-center mt-10'>
+            <Landmark size={80} color="#22c55e" />
+            </div>
+            </div>}
 
           </div>
 

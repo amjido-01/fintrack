@@ -53,12 +53,11 @@ const Signin = () => {
             if (profileData.hasWorkspace) {
                 const lastWorkspace = profileData.lastWorkspace;
                 console.log(lastWorkspace.id, "from login page");
-                
+                setLoading(false)
                 setData({
                     email: "",
                     password: "",
                 });
-                setLoading(false)
                 router.push(`/user/${userId}/workspace/${lastWorkspace.workspaceName}/${lastWorkspace.id}/dashboard`);
             } else {
                setData({
