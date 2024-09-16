@@ -91,7 +91,7 @@ const chartConfig = {
 export function ExpensesByCategory() {
     const [timeframe, setTimeframe] = useState("weekly")
   return (
-    <Card className="flex flex-col w-full md:w-1/2">
+    <Card className="flex flex-col w-full md:w-1/2 pb-4">
        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
        <div>
        <CardTitle>Total Expensive By Category</CardTitle>

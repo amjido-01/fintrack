@@ -2,20 +2,19 @@ import React from "react"
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
   
-  interface Expense {
+  interface Income {
     id: string;
-    expenseName: string;
+    incomeSource: string;
     amount: number;
     date: string;
     category: string;
-    note: string;
+    description: string;
     workspaceId: string;
   }
 
@@ -28,8 +27,8 @@ import {
 //     { id: 5, date: "2023-06-05", description: "Dinner", category: "Food", amount: 65.30 },
 //   ]
 
-  export function TransactionsList({ expenses}: { expenses: Expense[] }) {
-    const onlyTenExpenses = expenses?.slice(0, 5)
+  export function TransactionsList({ income }: { income: Income[] }) {
+    const onlyTenIncome = income?.slice(0, 5)
     return (
       <Table>
         <TableHeader>
@@ -41,12 +40,12 @@ import {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {onlyTenExpenses?.map((expense) => (
-            <TableRow key={expense?.id}>
-              <TableCell>{expense?.date}</TableCell>
-              <TableCell>{expense?.expenseName}</TableCell>
-              <TableCell>{expense?.category}</TableCell>
-              <TableCell>${expense?.amount.toFixed(2)}</TableCell>
+          {onlyTenIncome?.map((income) => (
+            <TableRow key={income.id}>
+              <TableCell>{income?.date}</TableCell>
+              <TableCell>{income?.description}</TableCell>
+              <TableCell>{income?.category}</TableCell>
+              <TableCell>${income?.amount.toFixed(2)}</TableCell>
             </TableRow>
           ))}
         </TableBody>

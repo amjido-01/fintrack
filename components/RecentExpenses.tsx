@@ -38,8 +38,10 @@ import {
     )
 
     return (
-      <ul className="space-y-8">
-        {expenseList}
+     // show no expenses if there are no expenses
+     expenseList.length === 0 ? <p className="text-2xl text-center mt-24 text-muted-foreground">No expenses added yet</p> :
+     <ul className="space-y-8">
+     {expenseList}
       </ul>
     )
   }

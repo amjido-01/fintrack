@@ -20,6 +20,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { DashboardCard } from '@/components/DashboardCard';
 import {ExpensesByCategory} from '@/components/ExpensesByCategory';
@@ -32,7 +33,7 @@ import { Search } from "@/components/search"
 import WorkspaceSwitcher from "@/components/workspace-switcher"
 import IncomeDialog from '@/components/IncomeDialog';
 import {BadgeDollarSign} from "lucide-react"
-import { Landmark } from 'lucide-react';
+import { Landmark, ArrowUpRight } from 'lucide-react';
 interface Expense {
   id: string;
   expenseName: string;
@@ -229,9 +230,11 @@ const page = () => {
                 <ExpensesByCategory/>
                   <Card className="w-full md:w-1/2">
                     <CardHeader>
-                      <CardTitle>Recent Expenses</CardTitle>
+                      <CardTitle className='flex justify-between items-center'>Recent Expenses
+                        {currentWorkSpace?.expenses.length > 0 && <Link href={`/expenses/${workspaceId}`}><ArrowUpRight /></Link>}
+                      </CardTitle>
                       <CardDescription>
-                        You have {currentWorkSpace?.expenses.length} expenses this month.
+                        You have {currentWorkSpace?.expenses.length} expenses so far.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -243,10 +246,12 @@ const page = () => {
                 <div>
                   <Card className="col-span-4">
                   <CardHeader>
-                    <CardTitle>Transaction History</CardTitle>
+                    <CardTitle className='flex justify-between items-center'>Transaction History
+                    {currentWorkSpace?.income.length > 0 && <Link href={`/transactions/${workspaceId}`}><ArrowUpRight /></Link>}
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="pl-2">
-                    <TransactionsList expenses={currentWorkSpace?.expenses} />
+                    <TransactionsList income={currentWorkSpace?.income} />
                   </CardContent>
                   </Card>
                     </div>
