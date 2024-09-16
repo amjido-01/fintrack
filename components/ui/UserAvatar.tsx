@@ -1,6 +1,7 @@
 import React from 'react';
 import { signOut } from 'next-auth/react';
 import { LogOut } from 'lucide-react';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { ChevronDown } from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
@@ -45,9 +46,10 @@ const UserAvatar = () => {
         </div>
     </DropdownMenuLabel>
     <DropdownMenuSeparator />
-    <DropdownMenuItem>Profile</DropdownMenuItem>
-    <DropdownMenuItem>Billing</DropdownMenuItem>
-    <DropdownMenuItem>Team</DropdownMenuItem>
+    <DropdownMenuItem>
+      <Link href="/profile">Profile</Link>
+    </DropdownMenuItem>
+    <DropdownMenuItem>Setting</DropdownMenuItem>
     <DropdownMenuSeparator />
     <DropdownMenuItem>
      <Button size="sm" onClick={() => signOut({callbackUrl: "/"})} className="w-full bg-transparent justify-start hover:bg-transparent text-white tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring "> 
