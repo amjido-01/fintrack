@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prismaDB";
 import getServerSession from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function handler(req: NextRequest, res: NextResponse) {
     const session = await getServerSession(authOptions);
 
     if (!session) {
@@ -12,6 +12,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }    
 
     // const userId = session?.user?.id;
+
+    if (req.method === "POST") {
         try {
             console.log("hello world")
             // const body = await req.json();
@@ -53,13 +55,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
             return NextResponse.json({ error: "Internal server error" }, { status: 500 });
         }
     }
-   
- export async function GET(req: NextRequest, res: NextResponse) {
-        const session = await getServerSession(authOptions);
-        if (!session) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
-        const userId = session?.user?.id;
+     else if (req.method === "GET") {
+        const userId = session.user.id
         try {
             const expense = await prisma.expense.findMany({
                 where: {userId: userId},
@@ -71,3 +68,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             return NextResponse.json({ error: "Failed to fetch expenses" }, { status: 500 });
         }
     }
+}
+
+export {handler as GET, handler as POST}

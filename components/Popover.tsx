@@ -16,9 +16,8 @@ import {
     handleAlertDialogOk: () => void;
     alertTitle: string;
     alertDescription: string;
-    showCancelButton: boolean;
   }
-const Popover: React.FC<PopoverProps> = ({isDialogOpen, setIsDialogOpen, handleAlertDialogOk, alertTitle, alertDescription, showCancelButton}) => {
+const Popover: React.FC<PopoverProps> = ({isDialogOpen, setIsDialogOpen, handleAlertDialogOk, alertTitle, alertDescription}) => {
   return (
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
     <AlertDialogContent>
@@ -28,9 +27,8 @@ const Popover: React.FC<PopoverProps> = ({isDialogOpen, setIsDialogOpen, handleA
         {alertDescription}
         </AlertDialogDescription>
       </AlertDialogHeader>
-      <AlertDialogFooter className='flex items-center gap-3'>
-        {showCancelButton && <AlertDialogCancel>Cancel</AlertDialogCancel>}
-        <AlertDialogAction className='text-white' onClick={handleAlertDialogOk}>Continue</AlertDialogAction>
+      <AlertDialogFooter>
+        <AlertDialogAction className='text-white' onClick={handleAlertDialogOk}>Ok</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

@@ -9,8 +9,6 @@ import { useSession } from "next-auth/react";
 import { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import Popover from './Popover';
-// import useWorkspaceStore from '@/store/useWorkspaceStore';
 import {
   Dialog,
   DialogContent,
@@ -24,7 +22,6 @@ import {
 
 
 const WorkSpaceDialog = () => {
-  // connst {setWorkspaces} = useWorkspaceStore();
   const router = useRouter();
   const { data: session, status } = useSession();
 
@@ -33,10 +30,6 @@ const WorkSpaceDialog = () => {
    const [description, setDescription] = useState('');
    const [error, setError] = useState('');
    const [open, setOpen] = useState(false);
-   const [isDialogOpen, setIsDialogOpen] = useState(false);
-   const [alertTitle, setAlertTitle] = useState("");
-   const [alertMessage, setAlertMessage] = useState("");
-   const [newWorkspaceId, setNewWorkspaceId] = useState('');
 
    const userId = session?.user.id;
 

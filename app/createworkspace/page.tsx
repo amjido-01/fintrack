@@ -8,11 +8,14 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from "next-auth/react";
+import { useParams } from 'next/navigation';
 import axios from 'axios';
 import Popover from '@/components/Popover';
+import { set } from 'date-fns';
 
-const Page = () => {
+const page = () => {
     const router = useRouter();
+    const { workspaceId } = useParams();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [alertTitle, setAlertTitle] = useState('')
     const [alertMessage, setAlertMessage] = useState('')
@@ -125,7 +128,7 @@ const Page = () => {
       </div>
 
         </form>
-        <Popover showCancelButton={false} alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
+        <Popover alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
     </div>
 </div>
         </div>
@@ -133,4 +136,4 @@ const Page = () => {
     )
 }
 
-export default Page
+export default page
