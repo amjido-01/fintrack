@@ -1,7 +1,5 @@
 "use client"
 import React from 'react'
-// import { prisma } from '@/lib/prismaDB'
-// import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
