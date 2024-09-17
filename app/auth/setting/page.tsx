@@ -4,11 +4,11 @@ import React from 'react'
 // import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+import { Button } from '../../../components/ui/button'
+import { Label } from '../../../components/ui/label'
 import { Loader2 } from 'lucide-react'
 import axios from 'axios'
-import { Input } from '@/components/ui/input'
+import { Input } from '../../../components/ui/input'
 const Page = () => {
   const [firstName, setFirstname] = useState('');
   const [lastName, setLastname] = useState('');
