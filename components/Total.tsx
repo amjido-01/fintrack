@@ -77,7 +77,7 @@ export function Total() {
        </div>
         <Select
           value={timeframe}
-          onValueChange={(value) => setTimeframe(value)}
+          onValueChange={(value: Timeframe) => setTimeframe(value)}
         >
           <SelectTrigger className="w-[120px]">
             <SelectValue placeholder="Select timeframe" />

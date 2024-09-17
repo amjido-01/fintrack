@@ -18,7 +18,7 @@ import { useSession } from 'next-auth/react';
 
 
 
-const page = () => {
+const Page = () => {
   const { data: session, status } = useSession();
     const fetchWorkspaces = async (): Promise<Workspace[]> => {
         const response = await axios.get('/api/workspace');
@@ -56,4 +56,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

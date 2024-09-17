@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
@@ -38,7 +38,7 @@ interface Income {
     workspaceId: string;
   }
 
-const page = () => {
+const Page = () => {
     const { workspaceId } = useParams();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [alertTitle, setAlertTitle] = useState("");
@@ -62,7 +62,7 @@ const page = () => {
         queryKey: ["workspace", workspaceId],
         queryFn: getWorkspace,
       });
-      console.log(data, "data from transaltions page");
+      console.log(data, "data from transaltions Page");
 
       // Handle the delete confirmation popover
   const handleDeletePopover = (id: string) => {
@@ -136,7 +136,6 @@ const page = () => {
         </TableBody>
       </Table>
 
-      {/* Popover for confirmation */}
       <Popover
         showCancelButton={ true}
         alertDescription={alertMessage}
@@ -149,4 +148,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

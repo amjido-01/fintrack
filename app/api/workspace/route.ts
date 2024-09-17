@@ -11,7 +11,7 @@ const workspaceSchema = z.object({
   description: z.string().min(1, "Workspace name is required")
 });
 
-export async function handler(req: NextRequest) {
+export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   // const router = useRouter()
 
@@ -20,7 +20,6 @@ export async function handler(req: NextRequest) {
   }
   const userId = session?.user?.id;
 
-  if (req.method === "POST") {
     try {
       const body = await req.json();
       const { workspaceName, description } = workspaceSchema.parse(body);
@@ -63,32 +62,34 @@ export async function handler(req: NextRequest) {
       console.error('Error creating workspace:', err);
       return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
-  } else if (req.method === "GET") {
-    try {
-       // check for user workspaces
-       const hasWorkSpace = await prisma.workspace.findMany({
-        where: {
-          createdById: userId
-        },
-        orderBy: {
-          lastActiveAt: 'desc'
-        },
-        include: {
-          expenses: true,
-          income: true
-        },
-      })
-      console.log(hasWorkSpace, "hasWorkspace")
-      return NextResponse.json(hasWorkSpace, { status: 200 });
-
-    } catch (err) {
-      console.error('Error retrieving workspaces:', err);
-      return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-    }
-  } else {
-    return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
+  } 
+   
+export async function GET(req: NextRequest, res: NextResponse) {
+  const session = await getServerSession(authOptions);
+  // const router = useRouter()
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  const userId = session?.user?.id;
+  try {
+    // check for user workspaces
+    const hasWorkSpace = await prisma.workspace.findMany({
+     where: {
+       createdById: userId
+     },
+     orderBy: {
+       lastActiveAt: 'desc'
+     },
+     include: {
+       expenses: true,
+       income: true
+     },
+   })
+   console.log(hasWorkSpace, "hasWorkspace")
+   return NextResponse.json(hasWorkSpace, { status: 200 });
 
+ } catch (err) {
+   console.error('Error retrieving workspaces:', err);
+   return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+ }
 }
-
-export { handler as GET, handler as POST };

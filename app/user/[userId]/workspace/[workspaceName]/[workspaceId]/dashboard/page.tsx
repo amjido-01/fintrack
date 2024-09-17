@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Loader2 } from 'lucide-react';
 import ExpensesDialog from '@/components/ExpensesDialog';
 import { Total } from '@/components/Total';
 import {
@@ -21,7 +22,6 @@ import {
   TabsTrigger,
 } from "@/components/ui/tabs";
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { DashboardCard } from '@/components/DashboardCard';
 import {ExpensesByCategory} from '@/components/ExpensesByCategory';
 import { useState } from 'react';
@@ -54,7 +54,7 @@ interface Income {
   workspaceId: string;
 }
 
-const page = () => {
+const Page = () => {
     // const searchParams  = useSearchParams();
     const [workspaceExpense, setWorkspaceExpense] = useState([]);
     const { data: session, status } = useSession();
@@ -138,13 +138,23 @@ const page = () => {
       }, [currentWorkSpace])
     
     
-    if (isLoading) return <div>Loading...</div>;
-    if (workspaces) console.log(workspaces, "my data")
-    if (error) return <div>Error: {error.message}</div>;
-    if (!session) return <p>No active session</p>;
-    console.log(session.user.id);
+    if (isLoading) return  <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col items-center">
+        <Loader2 className="h-6 w-6 animate-spin mb-2" />
+        <p>Getting your workspace ready, please wait...</p>
+      </div>
+  </div>
+    if (error) return <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col items-center">
+      <p>{error.message}</p>
+    </div>
+</div>;
+    if (!session) return <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col items-center">
+      <p>No Active Session</p>
+    </div>
+</div>;
     
-    console.log(session.user)
     const userId = session?.user?.id
 
   const TopCategorySvg = (<svg
@@ -272,4 +282,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page
