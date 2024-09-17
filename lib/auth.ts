@@ -18,7 +18,6 @@ export const authOptions: NextAuthOptions = {
         GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID || 'default-client-id',
             clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'default-client-id',
-            allowDangerousEmailAccountLinking: true,
             authorization: {
               params: {
                 prompt: "consent",
@@ -104,17 +103,20 @@ export const authOptions: NextAuthOptions = {
         }
         return true // Do different verification for other providers that don't have `email_verified`
       },
-      // get the user first from the jwt and then from the database
-      async jwt({ token, user }) {
-        if (user?.id) {
-          token.id = user.id
-        }
-        return token;
-      },
-      async session({session, token}){
-        session.user.id = token.id as string;
-        return session;
-      }
+      // async jwt({ token, user }) {
+      //   if (user) {
+      //     token.id = user.id;
+      //     token.userName = user.userName;
+      //   }
+      //   return token;
+      // },
+      // async session({ session, token }) {
+      //   if (token) {
+      //     session.user.id = token.id as string;
+      //     session.user.userName = token.userName as string | null;
+      //   }
+      //   return session;
+      // }
     },
     debug: true
     // debug: process.env.NODE_ENV === "development",

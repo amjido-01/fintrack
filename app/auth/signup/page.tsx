@@ -3,6 +3,7 @@ import React from 'react'
 import { useState } from 'react'
 import Link from 'next/link';
 import axios from 'axios';
+import { useSearchParams } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useRouter } from 'next/navigation';
@@ -10,15 +11,10 @@ import Image from 'next/image';
 import { Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { signIn } from 'next-auth/react';
-import Popover from '@/components/Popover';
 
 const Signup = () => {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [alertTitle, setAlertTitle] = useState('');
-    const [alertMessage, setAlertMessage] = useState('')
-    const [error, SetError] = useState('')
+    const [loading, setLoading] = useState(false);  
 
     const [data, setData] = useState({
         email: "",
@@ -30,17 +26,18 @@ const Signup = () => {
       const { email, password, name, userName } = data;
 
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(e.target.value)
         setData({ ...data, [e.target.name]: e.target.value });
       };
 
       const registerUser = async (e: any) => {
         e.preventDefault();
         setLoading(true)
+        console.log(data, "data from sign up form page");
         
 
         if(!email || !password || !name || !userName) {
-            setLoading(false)
-            SetError("All fields are required")
+            alert("Please enter an email and password")
             return;
         }
 
@@ -50,9 +47,8 @@ const Signup = () => {
             name,
             userName,
         }).then(() => {
-            setIsDialogOpen(true);
-            setAlertTitle('Registration Successful');
-            setAlertMessage('You can now log in with your credentials.');
+            alert("registered")
+            router.push("/auth/signin")
             setData({
                 email: "",
                 password: "",
@@ -60,27 +56,11 @@ const Signup = () => {
                 userName: "",
             })
         }).catch(() => {
-            setAlertTitle('Error');
-            setAlertMessage("An error occurred while submitting the form. Please try again.");
-            setIsDialogOpen(true);
+            alert("failed to register")
             setLoading(false)
         })
 
       }
-
-      function handleCloseDialog() {
-        setIsDialogOpen(false);
-        setLoading(false)
-        if (alertTitle === 'Registration Successful') {
-        router.push("/auth/signin")
-        }
-      }
-
-      const handleGoogleSignIn = async () => {
-        setLoading(true);
-    
-        await signIn("google", { callbackUrl: "/post-signin-redirect" });
-    };
 
   return (
     <div className="">
@@ -100,7 +80,7 @@ const Signup = () => {
         </p>
 
         <div className="mt-4">
-        <Button onClick={handleGoogleSignIn}  className="flex w-full items-center justify-center text-gray-600 transition-colors duration-300 transform border rounded-lg dark:border-gray-700 bg-transparent dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <Button onClick={() => signIn('google', {callbackUrl: "http://localhost:3000/dashboard"})} className="flex w-full items-center justify-center text-gray-600 transition-colors duration-300 transform border rounded-lg dark:border-gray-700 bg-transparent dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
             <div className="px-4 py-2">
                 <svg className="w-6 h-6" viewBox="0 0 40 40">
                     <path d="M36.3425 16.7358H35V16.6667H20V23.3333H29.4192C28.045 27.2142 24.3525 30 20 30C14.4775 30 10 25.5225 10 20C10 14.4775 14.4775 9.99999 20 9.99999C22.5492 9.99999 24.8683 10.9617 26.6342 12.5325L31.3483 7.81833C28.3717 5.04416 24.39 3.33333 20 3.33333C10.7958 3.33333 3.33335 10.7958 3.33335 20C3.33335 29.2042 10.7958 36.6667 20 36.6667C29.2042 36.6667 36.6667 29.2042 36.6667 20C36.6667 18.8825 36.5517 17.7917 36.3425 16.7358Z" fill="#FFC107" />
@@ -125,7 +105,6 @@ const Signup = () => {
 
         <form onSubmit={registerUser}>
         <div className="mt-4 flex flex-col md:flex-row md:justify-between">
-            {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className='w-[48%]'>
             <Label className='block mb-2 text-sm font-medium' htmlFor="name">Name</Label>
             <Input 
@@ -197,7 +176,6 @@ const Signup = () => {
             <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
         </div>
         </form>
-        <Popover showCancelButton={false} alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleCloseDialog} />
         </div>
 
     </div>
