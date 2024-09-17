@@ -197,7 +197,7 @@ const Signup = () => {
             <span className="w-1/5 border-b dark:border-gray-600 md:w-1/4"></span>
         </div>
         </form>
-        <Popover showCancelButton={false} alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleCloseDialog} />
+        <Popover alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleCloseDialog} />
         </div>
 
     </div>

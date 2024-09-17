@@ -56,9 +56,6 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recha
 //   },
 // ]
 
-type Timeframe = 'weekly' | 'monthly' | 'yearly';
-
-
 const chartData = {
   weekly: [
     { name: "Mon", amount: 120 },
@@ -120,7 +117,7 @@ export function Overview() {
       </CardHeader>
       <CardContent className="pl-2">
       <ResponsiveContainer width="100%" height={310}>
-      <BarChart data={chartData[timeframe as Timeframe]}>
+      <BarChart data={chartData[timeframe]}>
         <XAxis
           dataKey="name"
           stroke="#888888"

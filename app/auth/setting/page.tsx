@@ -9,10 +9,11 @@ import { Label } from '@/components/ui/label'
 import { Loader2 } from 'lucide-react'
 import axios from 'axios'
 import { Input } from '@/components/ui/input'
-const Page = () => {
+const page = () => {
   const [firstName, setFirstname] = useState('');
   const [lastName, setLastname] = useState('');
   const [loading, setLoading] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
   const router = useRouter();
 
 
@@ -90,4 +91,4 @@ const handleSubmit = async (e: any) => {
   )
 }
 
-export default Page
+export default page

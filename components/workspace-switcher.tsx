@@ -4,7 +4,9 @@ import * as React from "react"
 import {
   CaretSortIcon,
   CheckIcon,
+  PlusCircledIcon,
 } from "@radix-ui/react-icons"
+
 import { cn } from "@/lib/utils"
 import {
   Avatar,
@@ -30,36 +32,42 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 import WorkSpaceDialog from "./WorkSpaceDialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Workspace } from "@prisma/client"
-import { useSession } from "next-auth/react"
-import { useParams } from "next/navigation"
-import { useRouter } from "next/navigation"
-// import useWorkspaceStore from "@/store/useWorkspaceStore"
+import { useParams, useSearchParams } from "next/navigation"
+import { boolean } from "zod"
+import { get } from "http"
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
-interface WorkspaceSwitcherProps extends PopoverTriggerProps {
+interface TeamSwitcherProps extends PopoverTriggerProps {
   workspaces: Workspace[];
 }
 
 
-export default function WorkspaceSwitcher({ className, workspaces }: WorkspaceSwitcherProps) {
+export default function WorkspaceSwitcher({ className, workspaces }: TeamSwitcherProps) {
   const [open, setOpen] = React.useState(false)
-  const [showNewWorkspaceDialog, setShowNewWorkspaceDialog] = React.useState(false)
-  const [id, setId] = React.useState<string>("")
+  const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
+ 
   
-  const session = useSession();
-  const userId = session?.data?.user?.id;
-  // setId(userId)
+
   // console.log(selectedWorkspace.id);
   console.log(workspaces);
-  const router = useRouter();
+
 const {workspaceId}  = useParams()
 console.log("my id here: ", workspaceId);
 
@@ -70,8 +78,10 @@ const [selectedWorkspace, setSelectedWorkspace] = React.useState<Workspace>(work
 console.log("this is the selected: ", selectedWorkspace)
 
   
+ 
+
   return (
-    <Dialog open={showNewWorkspaceDialog} onOpenChange={setShowNewWorkspaceDialog}>
+    <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -89,9 +99,7 @@ console.log("this is the selected: ", selectedWorkspace)
               />
               <AvatarFallback>W</AvatarFallback>
             </Avatar>
-            <p className="truncate">
             {workspaces.find((workspace) => workspace.id === selectedWorkspace?.id)?.workspaceName}
-            </p>
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -108,7 +116,6 @@ console.log("this is the selected: ", selectedWorkspace)
                       onSelect={() => {
                         setSelectedWorkspace(workspace)
                         setOpen(false)
-                        router.push(`/user/${workspace.createdById}/workspace/${workspace.workspaceName}/${workspace.id}/dashboard`)
                       }}
                       className="text-sm"
                     >
@@ -122,7 +129,6 @@ console.log("this is the selected: ", selectedWorkspace)
                         />
                         <AvatarFallback>W</AvatarFallback>
                       </Avatar>
-
                       {workspace.workspaceName}
                       </div>
                       <p className="mt-1 text-[10px] pl-2 truncate">{workspace.description}</p>

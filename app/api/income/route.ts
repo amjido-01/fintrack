@@ -4,12 +4,13 @@ import getServerSession from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prismaDB";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function handler(req: NextRequest, res: NextResponse) {
     const session = await getServerSession(authOptions);
     if (!session) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }  
 
+    if (req.method === "POST") {
         try {
             const body = await req.json();
             console.log("Received body:", body);
@@ -48,5 +49,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
             console.error("Error creating expense:", error);
             return NextResponse.json({ error: "Internal server error" }, { status: 500 });
         }
-    } 
+    } else if (req.method === "GET") {
 
+    }
+}
+
+export {handler as GET, handler as POST}
