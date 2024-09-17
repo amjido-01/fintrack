@@ -171,7 +171,7 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) =
 
     </div>
   </form>
-      <Popover alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
+      <Popover showCancelButton={false} alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
       </div>
     </DialogContent>
   </Dialog>
