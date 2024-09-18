@@ -58,16 +58,12 @@ export default function WorkspaceSwitcher({ className, workspaces }: WorkspaceSw
   const userId = session?.data?.user?.id;
   // setId(userId)
   // console.log(selectedWorkspace.id);
-  console.log(workspaces);
   const router = useRouter();
 const {workspaceId}  = useParams()
-console.log("my id here: ", workspaceId);
 
 const workspace = workspaces.filter(workspace => workspace.id == workspaceId)
 
-console.log("this is my id: ", workspace);
 const [selectedWorkspace, setSelectedWorkspace] = React.useState<Workspace>(workspace[0]);
-console.log("this is the selected: ", selectedWorkspace)
 
   
   return (

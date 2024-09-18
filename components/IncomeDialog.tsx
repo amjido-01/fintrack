@@ -20,17 +20,20 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import axios from 'axios';
+import {  useQueryClient } from '@tanstack/react-query'
 
 
 interface Expense {
   userId: string;
   workspaceId: string | string[];
-  onIncomeAdded: () => void;
+  // onIncomeAdded: () => void;
 }
 
 const categories = ["Salary", "Business", "Freelance", "Investment", "Gift", "Other"
 ]
-const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) => {
+const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, 
+  //onIncomeAdded
+}) => {
     const [open, setOpen] = useState(false)
     const [incomeSource, setIncomeSource] = useState('')
     const [amount, setAmount] = useState('')
@@ -43,6 +46,7 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) =
     const [alertTitle, setAlertTitle] = useState('')
     const [alertMessage, setAlertMessage] = useState('')
 
+    const queryClient = useQueryClient();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -75,7 +79,10 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) =
           setAmount('');
           setCategory(categories[0]);
           setDescription('');
-          onIncomeAdded();
+          queryClient.invalidateQueries({
+            queryKey:['workspace', workspaceId, {type: "done"}]
+          })
+
         } else {
          setAlertTitle('Error');
          setAlertMessage('Failed to create expense.');
@@ -167,7 +174,7 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId, onIncomeAdded}) =
       {loading? <Button className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600" disabled>
       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
       Please wait
-    </Button> : <Button type="submit" className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600"> Add Expense </Button>}
+    </Button> : <Button type="submit" className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600"> Add Income </Button>}
 
     </div>
   </form>

@@ -1,5 +1,4 @@
 "use client"
-
 import { TrendingUp } from "lucide-react"
 import { CartesianGrid, Line, LineChart, XAxis, ResponsiveContainer } from "recharts"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -11,50 +10,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+interface Expense {
+  id: string;
+  expenseName: string;
+  amount: number;
+  date: string;
+  category: string;
+  note: string;
+  workspaceId: string;
+}
+interface Income {
+  id: string;
+  incomeSource: string;
+  amount: number;
+  date: string;
+  category: string;
+  description: string;
+  workspaceId: string;
+}
 
-// type Timeframe = 'weekly' | 'monthly' | 'yearly';
+type Timeframe = 'weekly' | 'monthly' | 'yearly';
 type ChartDataPoint = {
   name: string;
   expenses: number;
   income: number
-}
-const chartData: Record<Timeframe, ChartDataPoint[]> = {
-  weekly: [
-    { name: "Mon", expenses: 120, income: 100 },
-    { name: "Tue", expenses: 90, income: 80 },
-    { name: "Wed", expenses: 150, income: 70 },
-    { name: "Thu", expenses: 80, income: 60 },
-    { name: "Fri", expenses: 200, income: 50 },
-    { name: "Sat", expenses: 180, income: 40 },
-    { name: "Sun", expenses: 110, income: 90 },
-  ],
-  monthly: [
-    { name: "Week 1", expenses: 750, income: 800 },
-    { name: "Week 2", expenses: 620, income: 700 },
-    { name: "Week 3", expenses: 800, income: 850 },
-    { name: "Week 4", expenses: 690, income: 750 },
-  ],
-  yearly: [
-    { name: "Jan", expenses: 2800, income: 3000 },
-    { name: "Feb", expenses: 2500, income: 2800 },
-    { name: "Mar", expenses: 3100, income: 3300 },
-    { name: "Apr", expenses: 2900, income: 3100 },
-    { name: "May", expenses: 3300, income: 3500 },
-    { name: "Jun", expenses: 3000, income: 3200 },
-    { name: "Jul", expenses: 3200, income: 3400 },
-    { name: "Aug", expenses: 3400, income: 3600 },
-    { name: "Sep", expenses: 3100, income: 3300 },
-    { name: "Oct", expenses: 3500, income: 3700 },
-    { name: "Nov", expenses: 3200, income: 3400 },
-    { name: "Dec", expenses: 3800, income: 4000 },
-  ],
 }
 const chartConfig = {
   expenses: {
@@ -66,8 +52,137 @@ const chartConfig = {
     color: "hsl(var(--chart-3))",
   },
 } satisfies ChartConfig
-export function Total() {
+
+export function Total({expenses, income}) {
   const [timeframe, setTimeframe] = useState<Timeframe>('weekly')
+  const [chartData, setChartData] = useState<Record<Timeframe, ChartDataPoint[]>>({
+      weekly: [
+        { name: "Sun", expenses: 0, income: 0 },
+        { name: "Mon", expenses: 0, income: 0 },
+        { name: "Tue", expenses: 0, income: 0 },
+        { name: "Wed", expenses: 0, income: 0 },
+        { name: "Thu", expenses: 0, income: 0 },
+        { name: "Fri", expenses: 0, income: 0 },
+        { name: "Sat", expenses: 0, income: 0 },
+      ],
+      monthly: [
+        { name: "Week 1", expenses: 0, income: 0 },
+        { name: "Week 2", expenses: 0, income: 0 },
+        { name: "Week 3", expenses: 0, income: 0 },
+        { name: "Week 4", expenses: 0, income: 0 },
+      ],
+      yearly: [
+        { name: "Jan", expenses: 0, income: 0 },
+        { name: "Feb", expenses: 0, income: 0 },
+        { name: "Mar", expenses: 0, income: 0 },
+        { name: "Apr", expenses: 0, income: 0 },
+        { name: "May", expenses: 0, income: 0 },
+        { name: "Jun", expenses: 0, income: 0 },
+        { name: "Jul", expenses: 0, income: 0 },
+        { name: "Aug", expenses: 0, income: 0 },
+        { name: "Sep", expenses: 0, income: 0 },
+        { name: "Oct", expenses: 0, income: 0 },
+        { name: "Nov", expenses: 0, income: 0 },
+        { name: "Dec", expenses: 0, income: 0 },
+      ],
+    
+})
+
+
+
+useEffect(()=>{
+// Get the current date
+const currentDate = new Date();
+// console.log(currentDate, "current date")
+
+// Subtract 7 days
+let timeFrameInt = "weekly" ? 7 : "monthly" ? 28 : 366 
+
+const pastDate = new Date();
+pastDate.setDate(currentDate.getDate() - timeFrameInt);
+
+let updatedWeeklyChartData =   [
+  { name: "Sun", expenses: 0, income: 0 },
+  { name: "Mon", expenses: 0, income: 0 },
+  { name: "Tue", expenses: 0, income: 0 },
+  { name: "Wed", expenses: 0, income: 0 },
+  { name: "Thu", expenses: 0, income: 0 },
+  { name: "Fri", expenses: 0, income: 0 },
+  { name: "Sat", expenses: 0, income: 0 },
+]
+let updatedMonthChartData =   [
+  { name: "Week 1", expenses: 0, income: 0 },
+  { name: "Week 2", expenses: 0, income: 0 },
+  { name: "Week 3", expenses: 0, income: 0 },
+  { name: "Week 4", expenses: 0, income: 0 },
+]
+let updatedYearChartData =  [
+  { name: "Jan", expenses: 0, income: 0 },
+  { name: "Feb", expenses: 0, income: 0 },
+  { name: "Mar", expenses: 0, income: 0 },
+  { name: "Apr", expenses: 0, income: 0 },
+  { name: "May", expenses: 0, income: 0 },
+  { name: "Jun", expenses: 0, income: 0 },
+  { name: "Jul", expenses: 0, income: 0 },
+  { name: "Aug", expenses: 0, income: 0 },
+  { name: "Sep", expenses: 0, income: 0 },
+  { name: "Oct", expenses: 0, income: 0 },
+  { name: "Nov", expenses: 0, income: 0 },
+  { name: "Dec", expenses: 0, income: 0 },
+]
+// Filter expenses based on the past 7 days
+expenses?.filter((expense: Expense) => {
+  let expenseDate = new Date(expense.date)
+  // console.log("thruty of date: ", expenseDate <= pastDate, expenseDate, pastDate)
+   if(expenseDate >= pastDate) {
+    return expense;
+  }
+}).map((expense: Expense) => {  
+  let expenseDate = new Date(expense.date)
+  // get the day of the week
+  if (timeframe === "weekly") {
+    const dayOfWeek = expenseDate.getDay();
+    updatedWeeklyChartData[dayOfWeek].expenses += expense.amount
+  } else if (timeframe === "monthly") {
+    // console.log("monthly calculations")
+    const weekOfMonth = Math.ceil(expenseDate.getDate() / 7);
+    updatedMonthChartData[weekOfMonth - 1].expenses += expense.amount
+  } else {
+    const monthOfYear = expenseDate.getMonth() + 1;
+    // console.log("month of the year: ", monthOfYear)
+    updatedYearChartData[monthOfYear].expenses += expense.amount
+  }
+  })
+
+  income.filter((income:Income)=>{
+    let incomeDate = new Date(income.date)
+   if(incomeDate >= pastDate) {
+    return income;
+  }
+  }).map((income:Income)=>{
+    // console.log(income.date, "income date")
+  let incomeDate = new Date(income.date)
+  // get the day of the week
+  if (timeframe === "weekly") {
+    const dayOfWeek = incomeDate.getDay();
+    // console.log(dayOfWeek, "day of week", chartData["weekly"][dayOfWeek])
+    updatedWeeklyChartData[dayOfWeek].income += income.amount
+  } else if (timeframe === "monthly") {
+    // console.log("income monthly calculations")
+    const weekOfMonth = Math.ceil(incomeDate.getDate() / 7);
+    updatedMonthChartData[weekOfMonth - 1].income += income.amount
+  }  else {
+    const monthOfYear = incomeDate.getMonth() + 1;
+    // console.log("month of the year: ", monthOfYear)
+    updatedYearChartData[monthOfYear].income += income.amount
+
+  }
+
+  })
+
+  setChartData(oldChartData => ({...oldChartData, weekly: updatedWeeklyChartData, monthly:updatedMonthChartData, yearly:updatedYearChartData}))
+  // get day of the week as word like Mon
+},[expenses, timeframe, income])
   return (
     <Card className="col-span-4">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -149,4 +264,4 @@ export function Total() {
 }
 
 
-type Timeframe = 'weekly' | 'monthly' | 'yearly';
+// type Timeframe = 'weekly' | 'monthly' | 'yearly';

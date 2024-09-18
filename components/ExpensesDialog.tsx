@@ -21,17 +21,17 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue, } from './ui/select';
-
+import { useQueryClient } from '@tanstack/react-query';
     interface Expense {
       userId: string;
       workspaceId: string | string[];
-      onExpenseAdded: () => void;
     }
 
 
     const categories = ["Food", "Clothing", "Transportation", "Entertainment", "Medical", "Others"]
 
-const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}) => {
+const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
+    const queryClient = useQueryClient();
     const [open, setOpen] = useState(false)
     const [expenseName, setExpenseName] = useState('')
     const [date, setDate] = useState('')
@@ -76,7 +76,9 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId, onExpenseAdded}
         setAmount('');
         setCategory(categories[0]);
         setNote('');
-        onExpenseAdded()
+        queryClient.invalidateQueries({
+          queryKey:['workspace', workspaceId, {type: "done"}]
+        })
       } else {
         setAlertTitle('Error');
         setAlertMessage('Failed to create expense.');

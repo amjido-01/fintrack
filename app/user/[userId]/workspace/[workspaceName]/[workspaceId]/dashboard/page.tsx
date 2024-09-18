@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Loader2 } from 'lucide-react';
 import ExpensesDialog from '@/components/ExpensesDialog';
-import { Total } from '@/components/Total';
+import { Total } from '../../../../../../../components/Total';
 import {
   Tabs,
   TabsContent,
@@ -63,10 +63,10 @@ const Page = () => {
     const [balance, setBalance] = useState(0);
     const [averageDailyExpense, setAverageDailyExpense] = useState(0);
     const [topCategory, setTopCategory] = useState("");
+    const [topIncome, setTopIncome] = useState("")
     // const [workspaceData, setWorkspaceData] = useState(null);
 
     let {workspaceId}  = useParams()
-    console.log("my id here: ", typeof workspaceId);
     
     const getWorkspaces = async () => {
       const res = await axios.get(`/api/workspace`);
@@ -81,9 +81,8 @@ const Page = () => {
     const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
 
     const {data: currentWorkSpace, isLoading:currentLoading, error:currentError, refetch:refetchCurrentWorkspace} = useQuery(
-      {queryKey: ['workspace', workspaceId], queryFn: getWorkspace});
+      {queryKey: ['workspace', workspaceId, {type: "done"}], queryFn: getWorkspace});
       
-      console.log(currentWorkSpace, "currentWorkSpace");
 
       // check if the currentworkspace has income deposits
       const hasIncome = currentWorkSpace?.income.length > 0;
@@ -104,39 +103,72 @@ const Page = () => {
           return acc;
         }, {});
 
-        console.log("categoryTotals", categoryTotals)
 
          // Find the category with the highest total expense
          const topCategory = Object.keys(categoryTotals).reduce((top, current) => {
           // Compare totals and return the category with the higher total
           return categoryTotals[current] > categoryTotals[top] ? current : top;
         }, Object.keys(categoryTotals)[0]);
-
         setTopCategory(topCategory);
       }
-    
-      
+
+
+      //  function to get the highest income source
+      const trackTopIncomeSource = (income: Income[]) => {
+        // Group expenses by category and sum up the amounts
+
+        const incomeTotals = income.reduce((acc: Record<string, number>, income: Income) => {
+          const { incomeSource, amount } = income;
+          console.log(incomeSource, amount, "from icomesourc")
+
+          if (!acc[incomeSource]) {
+            acc[incomeSource] = 0;
+          }
+
+          acc[incomeSource] += amount;
+          return acc;
+        }, {});
+
+
+         // Find the category with the highest total expense
+         const topIncome = Object.keys(incomeTotals).reduce((top, current) => {
+          // Compare totals and return the category with the higher total
+          return incomeTotals[current] > incomeTotals[top] ? current : top;
+        }, Object.keys(incomeTotals)[0]);
+        setTopIncome(topIncome);
+      }
+
+
       useEffect(() => {
         if (currentWorkSpace && currentWorkSpace?.expenses) {
           // subtract the total expenses from the total income
           
+          // total expenses
           const total = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0);
           setTotalExpenses(total);
 
+          // total income
           const totalIncome = currentWorkSpace?.income.reduce((acc: number, income: Income) => acc + income.amount, 0);
           setTotalIncome(totalIncome);
 
+          // remaining income
           const balance = totalIncome - total;
           setBalance(balance);
+
+          
           const averageDailyExpense = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0) / currentWorkSpace?.expenses.length;
           const rounded = Math.round(averageDailyExpense * 100) / 100;
           setAverageDailyExpense(rounded);
           
           // Call the function to calculate the top category
           trackTopCategory(currentWorkSpace.expenses);
+
+          // Call the function to calculate the top income source
+          trackTopIncomeSource(currentWorkSpace.income);
         }
       }, [currentWorkSpace])
-    
+      
+      console.log(currentWorkSpace)
     
     if (isLoading) return  <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col items-center">
@@ -199,11 +231,12 @@ const Page = () => {
               <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
 
               {hasIncome && <div>
-              <ExpensesDialog onExpenseAdded={refetchCurrentWorkspace} userId={userId} workspaceId={workspaceId} />
+              <ExpensesDialog userId={userId} workspaceId={workspaceId} />
               </div>}
 
               <div>
-                <IncomeDialog userId={userId} workspaceId={workspaceId}  onIncomeAdded={refetchCurrentWorkspace}/>
+                <IncomeDialog userId={userId} workspaceId={workspaceId}  
+                />
               </div>
               </div>
 
@@ -228,16 +261,21 @@ const Page = () => {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <DashboardCard cardTitle="Total Income" cardContent={totalIncome} cardIcon={<BadgeDollarSign />} />
                   <DashboardCard cardTitle="Total Expenses" cardContent={totalExpenses} cardIcon={<BadgeDollarSign />} />
+
+                  <DashboardCard cardTitle='Top Income Source' cardContent={topIncome} cardIcon={<BadgeDollarSign />} />
+
+                  <DashboardCard cardTitle='Top Expense Category' cardContent={topCategory} cardIcon={TopCategorySvg} />
+                  
                   <DashboardCard cardTitle='Remaining Balance' cardContent={balance} cardIcon={<BadgeDollarSign />} />
-                  <DashboardCard cardTitle='Top Category' cardContent={topCategory} cardIcon={TopCategorySvg} />
-                   
+
+                  <DashboardCard cardTitle='Average Daily Expenses' cardContent={averageDailyExpense} cardIcon={<BadgeDollarSign />} />
                 </div>
                 <div>
-                    <Total />
+                    <Total income={currentWorkSpace?.income} expenses={currentWorkSpace?.expenses} />
                   </div>
                 <div className="flex flex-col md:flex-row gap-4">
 
-                <ExpensesByCategory/>
+                <ExpensesByCategory expenses={currentWorkSpace?.expenses}/>
                   <Card className="w-full md:w-1/2">
                     <CardHeader>
                       <CardTitle className='flex justify-between items-center'>Recent Expenses
