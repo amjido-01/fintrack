@@ -3,8 +3,8 @@ import React from 'react'
 import { useState } from 'react'
 import Link from 'next/link';
 import axios from 'axios';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '../../../components/ui/input';
+import { Label } from '../../../components/ui/label';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Loader2 } from 'lucide-react';

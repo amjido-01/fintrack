@@ -96,10 +96,9 @@ const currentDate = new Date();
 // console.log(currentDate, "current date")
 
 // Subtract 7 days
-let timeFrameInt = "weekly" ? 7 : "monthly" ? 28 : 366 
+let timeFrameInt = timeframe === "weekly" ? 7 : timeframe === "monthly" ? 28 : 365 
 
-const pastDate = new Date();
-pastDate.setDate(currentDate.getDate() - timeFrameInt);
+const pastDate = new Date(currentDate.getTime() - timeFrameInt * 24 * 60 * 60 * 1000);
 
 let updatedWeeklyChartData =   [
   { name: "Sun", expenses: 0, income: 0 },
