@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prismaDB'; // Ensure this path is correct
+import { prisma } from '../../../lib/prismaDB'; // Ensure this path is correct
 
 export async function GET(req: NextRequest) {
+    const { searchParams } = new URL(req.url);
+    const userId = searchParams.get('id');
+    if (!userId) {
+        return NextResponse.json({ error: 'User email is required' }, { status: 400 });
+    }
+
     try {
-        const { searchParams } = new URL(req.url);
-        const userId = searchParams.get('id');
-        
-
-        if (!userId) {
-            return NextResponse.json({ error: 'User email is required' }, { status: 400 });
-        }
-
         const user = await prisma.user.findUnique({
             where: {
                 id: userId,
