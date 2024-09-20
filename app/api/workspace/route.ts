@@ -3,12 +3,13 @@ import { prisma } from "@/lib/prismaDB";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
 // import { useRouter } from "next/navigation";
 // Zod schema for validating the request data
+
+
 const workspaceSchema = z.object({
   workspaceName: z.string().min(1, "Workspace name is required"),
-  description: z.string().min(1, "Workspace name is required")
+  description: z.string().min(1, "Description is required"),
 });
 
 export async function POST(req: NextRequest) {

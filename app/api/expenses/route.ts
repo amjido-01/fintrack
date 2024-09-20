@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             const body = await req.json();
             console.log('Received request body:', body);
         
-            const { expenseName, date, amount, category, note, workspaceId, userId } = body;
+            const { expenseName, date, amount, category, note, customCategory, workspaceId, userId } = body;
         
             if (!workspaceId || !userId) {
                 console.error('Missing workspaceId or userId');
@@ -28,6 +28,14 @@ export async function POST(req: NextRequest, res: NextResponse) {
             if (!expenseName || !date || !amount || !category || !userId || !workspaceId) {
                 return NextResponse.json({ error: "All fields are required" }, { status: 400 })
             }
+
+
+            if (category === "Other" && !customCategory) {
+                return NextResponse.json(
+                  { error: "Custom category name is required for 'Other' category" },
+                  { status: 400 }
+                );
+              }
 
             const parsedDate = new Date(date);
             const parsedAmount = parseFloat(amount);
@@ -42,6 +50,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                     date: parsedDate,
                     note,
                     category,
+                    customCategory: category === "Other" ? customCategory : null,
                     amount: parsedAmount,
                     workspace: {connect: { id: workspaceId } },
                     user: {connect: { id: userId } }

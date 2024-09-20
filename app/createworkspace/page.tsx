@@ -10,6 +10,14 @@ import { useState } from 'react';
 import { useSession } from "next-auth/react";
 import axios from 'axios';
 import Popover from '@/components/Popover';
+import {z} from "zod"
+
+
+// zod validation
+const workspaceSchema = z.object({
+  workspaceName: z.string().min(1, "Workspace name is required").refine((val) => !val.includes(' '), "Workspace name cannot contain spaces"),
+  description: z.string().min(1, "Description is required"),
+});
 
 const Page = () => {
     const router = useRouter();
@@ -24,7 +32,7 @@ const Page = () => {
    const [workspaceName, setWorkspaceName] = useState('');
    const [description, setDescription] = useState('');
    const [workspaceNameValue, setWorkspaceNameValue] = useState('');
-   const [error, setError] = useState('');
+   const [errors, setErrors] = useState<{ workspaceName?: string; description?: string }>({});
 //    const [open, setOpen] = useState(false);
 
    const userId = session?.user.id;
@@ -32,8 +40,20 @@ const Page = () => {
       const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
-    
+        setErrors({});
+
+        const validation = workspaceSchema.safeParse({workspaceName, description});
+        if(!validation.success) {
+          const errorMessages = validation.error.format();
+          setErrors({
+            workspaceName: errorMessages.workspaceName?._errors[0],
+            description: errorMessages.description?._errors[0],
+          });
+          setLoading(false);
+          return;
+        }
+
+
         try {
           const response = await axios.post('/api/workspace', {
             workspaceName,
@@ -56,18 +76,17 @@ const Page = () => {
             setIsDialogOpen(true);
           } else {
             
-            setError(response.data.error || 'Workspace creation failed');
+            setErrors(response.data.error || 'Workspace creation failed');
           }
         } catch (err) {
           setLoading(false);
           if (axios.isAxiosError(err) && err.response) {
-            setError(err.response.data.error || 'Workspace creation failed');
+            setErrors(err.response.data.error || 'Workspace creation failed');
             setAlertTitle("Error");
             setAlertMessage(err.response.data.error || "Workspace creation failed");
             setIsDialogOpen(true);
             setLoading(false);
           } else {
-            setError('Workspace creation failed');
           setAlertTitle("Error");
           setAlertMessage("Workspace creation failed");
           setIsDialogOpen(true);
@@ -107,12 +126,13 @@ const Page = () => {
             placeholder="Enter workspace name"
             className="mt-1"
           />
-          {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+          {errors.workspaceName && <p className="text-red-500 text-sm mt-1">{errors.workspaceName}</p>}
         </div>
 
         <div className="mt-4">
         <Label htmlFor="description">Description</Label>
-        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} className='mt-1' name='description' required placeholder="Add a description for your workspace." id="description" />
+        <Textarea value={description} onChange={(e) => setDescription(e.target.value)} className='mt-1' name='description'  placeholder="Add a description for your workspace." id="description" rows={3}/>
+        {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
       </div>
 
       <div className='mt-4'>

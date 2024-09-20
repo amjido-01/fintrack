@@ -51,6 +51,7 @@ model Expense {
   date        DateTime
   note        String
   category    String
+  customCategory String
   amount      Float
   createdAt   DateTime   @default(now())
   workspace   Workspace  @relation(fields: [workspaceId], references: [id])
@@ -59,7 +60,6 @@ model Expense {
   userId      String
   @@index([userId])
   @@index([workspaceId])
-  // Other fields
 }
 
 model Income {

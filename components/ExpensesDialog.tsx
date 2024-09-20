@@ -28,7 +28,7 @@ import { useQueryClient } from '@tanstack/react-query';
     }
 
 
-    const categories = ["Food", "Clothing", "Transportation", "Entertainment", "Medical", "Others"]
+    const categories = ["Food", "Clothing", "Transportation", "Entertainment", "Medical", "Other"]
 
 const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     const queryClient = useQueryClient();
@@ -36,6 +36,7 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     const [expenseName, setExpenseName] = useState('')
     const [date, setDate] = useState('')
     const [category, setCategory] = useState(categories[0])
+    const [customCategory, setCustomCategory] = useState('')
     const [amount, setAmount] = useState('')
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
@@ -47,6 +48,10 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+
+        const expenseCategory = category === "Other" ? customCategory : category;
+        console.log("Submitting category:", expenseCategory); 
+
         setLoading(true)
         setError('')
         console.log("am gettig called")
@@ -62,6 +67,7 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
         date,
         amount,
         category,
+        customCategory: category === "Other" ? customCategory : null,
         note,
         workspaceId,
         userId
@@ -142,7 +148,10 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     </div>
     <div className="mt-1">
     <Label htmlFor="category">Category</Label>
-      <Select value={category} onValueChange={setCategory}>
+      <Select value={category} onValueChange={(value) => {
+        console.log("Selected category:", value);
+        setCategory(value)
+        }}>
       <SelectTrigger>
       <SelectValue placeholder="Select a category" />
       </SelectTrigger>
@@ -154,11 +163,22 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
         ))}
       </SelectContent>
       </Select>
-      
     </div>
 
+        {category === "Other" && <div className="mt-1">
+          <Label htmlFor="customCategory">Custom Category</Label>
+          <Input
+            id="customCategory"
+            type="text"
+            name='customCategory'
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
+            placeholder="Enter custom category"
+            className="mt-1"
+          />
+        </div>} 
+
     <div className="mt-1">
-      {/* date picker */}
       <label htmlFor="date">Date</label>
       <input type="date" id="date" name="date" value={date} onChange={(e) => setDate(e.target.value)} />
     </div>

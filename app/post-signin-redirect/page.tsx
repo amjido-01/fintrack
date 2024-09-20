@@ -45,7 +45,7 @@ const PostSigninRedirect = () => {
       {loading ? (
         <div className="flex flex-col items-center">
           <Loader2 className="h-6 w-6 animate-spin mb-2" />
-          <p>Redirecting, please wait...</p>
+          <p>please wait, Almost there...</p>
         </div>
       ) : null}
     </div>

@@ -47,11 +47,6 @@ const UserAvatar = () => {
     </DropdownMenuLabel>
     <DropdownMenuSeparator />
     <DropdownMenuItem>
-      <Link href="/profile">Profile</Link>
-    </DropdownMenuItem>
-    <DropdownMenuItem>Setting</DropdownMenuItem>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem>
      <Button size="sm" onClick={() => signOut({callbackUrl: "/"})} className="w-full bg-transparent justify-start hover:bg-transparent text-white tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring "> 
      <LogOut className="mr-2 h-4 w-4" />
         Sign Out
