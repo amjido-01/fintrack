@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { useSession } from "next-auth/react";
 import axios from 'axios';
 import Popover from '@/components/Popover';
-import { useQuery } from '@tanstack/react-query';
+// import { useQuery } from '@tanstack/react-query';
 import {  Select,
   SelectContent,
   SelectItem,
@@ -26,6 +26,7 @@ const workspaceSchema = z.object({
   currency: z.string().min(1, "Currency is required"),
 });
 
+const currencies = ["AED", "USD", "NGN", "SAR", "QAR"]
 const Page = () => {
     const router = useRouter();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -35,13 +36,13 @@ const Page = () => {
 
     const { data: session, status } = useSession();
 
-    const getCurrencies = async () => {
-      const response = await axios.get("https://openexchangerates.org/api/currencies.json");
-      return response.data;
-    }
+    // const getCurrencies = async () => {
+    //   const response = await axios.get("https://openexchangerates.org/api/currencies.json");
+    //   return response.data;
+    // }
 
 
-    const {data, isLoading, error}= useQuery({ queryKey: ['currencies'], queryFn: getCurrencies })
+    // const {data, isLoading, error}= useQuery({ queryKey: ['currencies'], queryFn: getCurrencies })
 
    const [loading, setLoading] = useState(false);
    const [workspaceName, setWorkspaceName] = useState('');
@@ -156,11 +157,16 @@ const Page = () => {
       </SelectTrigger>
       <SelectContent>
       <SelectContent>
-    {data && Object.entries(data).map(([code]) => (
+        {currencies.map((currency) => (
+          <SelectItem key={currency} value={currency}>
+            {currency}
+          </SelectItem>
+        ))}
+    {/* {data && Object.entries(data).map(([code]) => (
     <SelectItem key={code} value={code}>
       {code}
     </SelectItem>
-    ))}
+    ))} */}
   </SelectContent>
       </SelectContent>
       </Select>

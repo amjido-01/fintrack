@@ -9,7 +9,7 @@ import {
   interface DashboardCardProps {
     cardTitle: string;
     cardContent: number | string;
-    cardIcon: React.ReactElement;
+    cardIcon: React.ReactElement | string;
     // currency: string
   }
 export const DashboardCard: React.FC<DashboardCardProps> = ({cardTitle, 

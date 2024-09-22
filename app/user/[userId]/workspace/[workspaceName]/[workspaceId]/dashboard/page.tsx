@@ -86,7 +86,7 @@ const Page = () => {
 
       // check if the currentworkspace has income deposits
       const hasIncome = currentWorkSpace?.income.length > 0;
-
+      const workspaceCurrency = currentWorkSpace?.currency === "USD" ? "$" : currentWorkSpace?.currency === "NGN" ? "₦" : currentWorkSpace?.currency === "SAR" ? "ر.س" : currentWorkSpace?.currency === "QAR" ? "ر.ق" : currentWorkSpace?.currency === "AED" ? "د.إ" : "₦";
 
       // function to calculate the top category from expenses
       const trackTopCategory = (expenses: Expense[]) => {
@@ -261,14 +261,14 @@ const Page = () => {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <DashboardCard 
                   // currency={currentWorkSpace?.currency}
-                   cardTitle="Total Income" cardContent={totalIncome} cardIcon={<BadgeDollarSign />} />
-                  <DashboardCard cardTitle="Total Expenses" cardContent={totalExpenses} cardIcon={<BadgeDollarSign />} />
+                   cardTitle="Total Income" cardContent={totalIncome} cardIcon={workspaceCurrency} />
+                  <DashboardCard cardTitle="Total Expenses" cardContent={totalExpenses} cardIcon={workspaceCurrency} />
 
                   <DashboardCard cardTitle='Top Income Source' cardContent={topIncome} cardIcon={<Banknote />} />
 
                   <DashboardCard cardTitle='Top Expense Category' cardContent={topCategory} cardIcon={TopCategorySvg} />
                   
-                  <DashboardCard cardTitle='Remaining Balance' cardContent={balance} cardIcon={<BadgeDollarSign />} />
+                  <DashboardCard cardTitle='Remaining Balance' cardContent={balance} cardIcon={workspaceCurrency} />
 
                   {currentWorkSpace?.expenses.length > 0 ? <DashboardCard cardTitle='Average Daily Expenses' cardContent={averageDailyExpense} cardIcon={<BadgeDollarSign />} /> : 
                     <Card>
