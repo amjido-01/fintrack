@@ -32,7 +32,7 @@ import UserAvatar from '@/components/ui/UserAvatar';
 import { Search } from "@/components/search"
 import WorkspaceSwitcher from "@/components/workspace-switcher"
 import IncomeDialog from '@/components/IncomeDialog';
-import {BadgeDollarSign} from "lucide-react"
+import {BadgeDollarSign, Banknote } from "lucide-react"
 import { Landmark, ArrowUpRight } from 'lucide-react';
 interface Expense {
   id: string;
@@ -60,7 +60,7 @@ const Page = () => {
     const { data: session, status } = useSession();
     const [totalExpenses, setTotalExpenses] = useState(0);
     const [totalIncome, setTotalIncome] = useState(0);
-    const [balance, setBalance] = useState(0);
+    const [balance, setBalance] = useState<string | number>(0);
     const [averageDailyExpense, setAverageDailyExpense] = useState(0);
     const [topCategory, setTopCategory] = useState("");
     const [topIncome, setTopIncome] = useState("")
@@ -119,7 +119,7 @@ const Page = () => {
 
         const incomeTotals = income.reduce((acc: Record<string, number>, income: Income) => {
           const { incomeSource, amount } = income;
-          console.log(incomeSource, amount, "from icomesourc")
+          console.log(incomeSource, typeof amount, "from icomesourc")
 
           if (!acc[incomeSource]) {
             acc[incomeSource] = 0;
@@ -145,14 +145,14 @@ const Page = () => {
           
           // total expenses
           const total = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0);
-          setTotalExpenses(total);
+          setTotalExpenses(total.toFixed(2));
 
           // total income
           const totalIncome = currentWorkSpace?.income.reduce((acc: number, income: Income) => acc + income.amount, 0);
-          setTotalIncome(totalIncome);
+          setTotalIncome(totalIncome.toFixed(2));
 
           // remaining income
-          const balance = totalIncome - total;
+          let balance = (totalIncome - total).toFixed(2);
           setBalance(balance);
 
           
@@ -259,16 +259,34 @@ const Page = () => {
               </TabsList>
               <TabsContent value="overview" className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  <DashboardCard cardTitle="Total Income" cardContent={totalIncome} cardIcon={<BadgeDollarSign />} />
+                  <DashboardCard 
+                  // currency={currentWorkSpace?.currency}
+                   cardTitle="Total Income" cardContent={totalIncome} cardIcon={<BadgeDollarSign />} />
                   <DashboardCard cardTitle="Total Expenses" cardContent={totalExpenses} cardIcon={<BadgeDollarSign />} />
 
-                  <DashboardCard cardTitle='Top Income Source' cardContent={topIncome} cardIcon={<BadgeDollarSign />} />
+                  <DashboardCard cardTitle='Top Income Source' cardContent={topIncome} cardIcon={<Banknote />} />
 
                   <DashboardCard cardTitle='Top Expense Category' cardContent={topCategory} cardIcon={TopCategorySvg} />
                   
                   <DashboardCard cardTitle='Remaining Balance' cardContent={balance} cardIcon={<BadgeDollarSign />} />
 
-                  <DashboardCard cardTitle='Average Daily Expenses' cardContent={averageDailyExpense} cardIcon={<BadgeDollarSign />} />
+                  {currentWorkSpace?.expenses.length > 0 ? <DashboardCard cardTitle='Average Daily Expenses' cardContent={averageDailyExpense} cardIcon={<BadgeDollarSign />} /> : 
+                    <Card>
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium">
+      No Expenses Yet
+      </CardTitle>
+      <span className='text-gray-400'><BadgeDollarSign /></span>
+    </CardHeader>
+    <CardContent>
+      <p className="text-xs text-muted-foreground">
+        Add your first expense to get started.
+        </p>
+    </CardContent>
+                    </Card>
+                    }
+
+                  {/* {currentWorkSpace?.income.length > 0 && <DashboardCard cardTitle='Average Daily Income' cardContent={averageDailyIncome} cardIcon={<BadgeDollarSign />} />} */}
                 </div>
                 <div>
                     <Total income={currentWorkSpace?.income} expenses={currentWorkSpace?.expenses} />

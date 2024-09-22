@@ -10,8 +10,17 @@ import {
     cardTitle: string;
     cardContent: number | string;
     cardIcon: React.ReactElement;
+    // currency: string
   }
-export const DashboardCard: React.FC<DashboardCardProps> = ({cardTitle, cardContent, cardIcon}) => {
+export const DashboardCard: React.FC<DashboardCardProps> = ({cardTitle, 
+  // currency, 
+  cardContent, cardIcon}) => {
+  // if (typeof cardContent === 'number') {
+  //   let res = cardContent.Intl.NumberFormat({
+  //     style: 'currency',
+  //     currency: currency
+  //   })
+  // }
   return (
     <Card>
     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

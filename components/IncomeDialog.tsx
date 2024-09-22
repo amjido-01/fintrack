@@ -36,12 +36,13 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
 }) => {
     const [open, setOpen] = useState(false)
     const [incomeSource, setIncomeSource] = useState('')
-    const [amount, setAmount] = useState('')
+    const [amount, setAmount] = useState<number>()
     const [error, setError] = useState('')
     const [loading, setLoading] = useState(false)
     const [date, setDate] = useState('')
     const [description, setDescription] = useState('')
     const [category, setCategory] = useState(categories[0])
+    const [customCategory, setCustomCategory] = useState<string | null>(null)
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [alertTitle, setAlertTitle] = useState('')
     const [alertMessage, setAlertMessage] = useState('')
@@ -52,6 +53,8 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
       e.preventDefault();
       setLoading(true)
       setError('')
+
+      const incomeCategory = category === "Other" ? customCategory: category
       
       if (!incomeSource || !date || !amount || !category || !description) {
         setError('All fields are required');
@@ -65,7 +68,8 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
           date,
           description,
           category,
-          amount: parseFloat(amount),
+          customCategory: category === "Other" ? customCategory: null,
+          amount,
           workspaceId,
           userId
         })
@@ -76,13 +80,14 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
           setIsDialogOpen(true)
           setIncomeSource('');
           setDate('');
-          setAmount('');
+          setAmount(0);
           setCategory(categories[0]);
+          setCustomCategory("")
           setDescription('');
           queryClient.invalidateQueries({
             queryKey:['workspace', workspaceId, {type: "done"}]
           })
-
+          setOpen(true);
         } else {
          setAlertTitle('Error');
          setAlertMessage('Failed to create expense.');
@@ -100,7 +105,11 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
 
     function handleAlertDialogOk() {
       setIsDialogOpen(false);
-      setOpen(false); 
+      if (alertTitle === "Error") {
+        setOpen(true); 
+      } else {
+        setOpen(false); 
+      }
       setError('')
       setLoading(false)
     }
@@ -137,7 +146,7 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
         type="number"
         name='amount'
         value={amount}
-        onChange={(e) => setAmount(e.target.value)}
+        onChange={(e) =>  setAmount(Number(e.target.value))}
         placeholder="Enter amount"
         className="mt-1"
       />
@@ -145,7 +154,7 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
     </div>
     <div className="mt-1">
     <Label htmlFor="category">Category</Label>
-      <Select value={category} onValueChange={setCategory}>
+      <Select value={category} onValueChange={(value) => setCategory(value)}>
       <SelectTrigger>
       <SelectValue placeholder="Select a category" />
       </SelectTrigger>
@@ -157,8 +166,20 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
         ))}
       </SelectContent>
       </Select>
-      
     </div>
+
+    {category === "Other" && <div className="mt-1">
+          <Label htmlFor="customCategory">Custom Category</Label>
+          <Input
+            id="customCategory"
+            type="text"
+            name='customCategory'
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
+            placeholder="Enter custom category"
+            className="mt-1"
+          />
+        </div>} 
 
     <div className="mt-1">
       {/* date picker */}

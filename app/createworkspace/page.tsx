@@ -10,6 +10,12 @@ import { useState } from 'react';
 import { useSession } from "next-auth/react";
 import axios from 'axios';
 import Popover from '@/components/Popover';
+import { useQuery } from '@tanstack/react-query';
+import {  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue, } from "@/components/ui/select"
 import {z} from "zod"
 
 
@@ -17,6 +23,7 @@ import {z} from "zod"
 const workspaceSchema = z.object({
   workspaceName: z.string().min(1, "Workspace name is required").refine((val) => !val.includes(' '), "Workspace name cannot contain spaces"),
   description: z.string().min(1, "Description is required"),
+  currency: z.string().min(1, "Currency is required"),
 });
 
 const Page = () => {
@@ -26,13 +33,22 @@ const Page = () => {
     const [alertMessage, setAlertMessage] = useState('')
     const [workspaceIdValue, setWorkspaceIdValue] = useState('')
 
-  const { data: session, status } = useSession();
+    const { data: session, status } = useSession();
+
+    const getCurrencies = async () => {
+      const response = await axios.get("https://openexchangerates.org/api/currencies.json");
+      return response.data;
+    }
+
+
+    const {data, isLoading, error}= useQuery({ queryKey: ['currencies'], queryFn: getCurrencies })
 
    const [loading, setLoading] = useState(false);
    const [workspaceName, setWorkspaceName] = useState('');
    const [description, setDescription] = useState('');
+   const [currency, setCurrency] = useState("")
    const [workspaceNameValue, setWorkspaceNameValue] = useState('');
-   const [errors, setErrors] = useState<{ workspaceName?: string; description?: string }>({});
+   const [errors, setErrors] = useState<{ workspaceName?: string; description?: string, currency?: string }>({});
 //    const [open, setOpen] = useState(false);
 
    const userId = session?.user.id;
@@ -42,11 +58,12 @@ const Page = () => {
         setLoading(true);
         setErrors({});
 
-        const validation = workspaceSchema.safeParse({workspaceName, description});
+        const validation = workspaceSchema.safeParse({workspaceName, description, currency});
         if(!validation.success) {
           const errorMessages = validation.error.format();
           setErrors({
             workspaceName: errorMessages.workspaceName?._errors[0],
+            currency: errorMessages.currency?._errors[0],
             description: errorMessages.description?._errors[0],
           });
           setLoading(false);
@@ -57,6 +74,7 @@ const Page = () => {
         try {
           const response = await axios.post('/api/workspace', {
             workspaceName,
+            currency,
             description
           });
           
@@ -72,6 +90,7 @@ const Page = () => {
             setAlertMessage('Your workspace has been created successfully.');
             setWorkspaceName(''); // Reset workspace name input
             setDescription(''); // Reset description input
+            setCurrency("")
             setLoading(false);
             setIsDialogOpen(true);
           } else {
@@ -128,6 +147,25 @@ const Page = () => {
           />
           {errors.workspaceName && <p className="text-red-500 text-sm mt-1">{errors.workspaceName}</p>}
         </div>
+        
+        <div className="mt-4">
+    <Label htmlFor="currency">Currency</Label>
+      <Select value={currency} onValueChange={(value) => setCurrency(value)}>
+      <SelectTrigger>
+      <SelectValue placeholder="Please select workspace currency" />
+      </SelectTrigger>
+      <SelectContent>
+      <SelectContent>
+    {data && Object.entries(data).map(([code]) => (
+    <SelectItem key={code} value={code}>
+      {code}
+    </SelectItem>
+    ))}
+  </SelectContent>
+      </SelectContent>
+      </Select>
+      {errors.currency && <p className="text-red-500 text-sm mt-1">{errors.currency}</p>}
+    </div>
 
         <div className="mt-4">
         <Label htmlFor="description">Description</Label>

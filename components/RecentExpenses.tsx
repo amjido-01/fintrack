@@ -29,7 +29,7 @@ import {
       <div className="ml-4 space-y-1">
         <p className="text-sm font-medium leading-none">{expense.expenseName}</p>
         <p className="text-sm text-muted-foreground">
-          {expense.date}
+          {expense.date.toString()}
         </p>
       </div>
       

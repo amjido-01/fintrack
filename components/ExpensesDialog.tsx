@@ -50,7 +50,7 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
         e.preventDefault()
 
         const expenseCategory = category === "Other" ? customCategory : category;
-        console.log("Submitting category:", expenseCategory); 
+       
 
         setLoading(true)
         setError('')

@@ -9,6 +9,7 @@ import { authOptions } from "@/lib/auth";
 
 const workspaceSchema = z.object({
   workspaceName: z.string().min(1, "Workspace name is required"),
+  currency: z.string().min(1, "Currency is required"),
   description: z.string().min(1, "Description is required"),
 });
 
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
 
     try {
       const body = await req.json();
-      const { workspaceName, description } = workspaceSchema.parse(body);
+      const { workspaceName, description, currency } = workspaceSchema.parse(body);
   
       // check if workspace already exists
       const existingWorkspace = await prisma.workspace.findFirst({
@@ -44,6 +45,7 @@ export async function POST(req: NextRequest) {
       const result = await prisma.workspace.create({
         data: {
           workspaceName,
+          currency,
           description,
           createdById: userId
         },

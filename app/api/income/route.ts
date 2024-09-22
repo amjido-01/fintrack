@@ -3,7 +3,7 @@ import getServerSession from "next-auth/next";
 import { authOptions } from "../../../lib/auth";
 import { prisma } from "../../../lib/prismaDB";
 
-export async function POST(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions);
     if (!session) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -11,9 +11,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
         try {
             const body = await req.json();
-            console.log("Received body:", body);
+          
 
-            const { incomeSource, amount, date, category, description, workspaceId, userId } = body;
+            const { incomeSource, amount, date, category, customCategory, description, workspaceId, userId } = body;
+            console.log(body)
+
 
             if (!workspaceId || !userId) {
                 console.error('Missing workspaceId or userId');
@@ -24,6 +26,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
               if (!incomeSource || !date || !category || !amount || !description || !userId || !workspaceId) {
                 return NextResponse.json({ error: "All fields are required" }, { status: 400 })
             }
+
+            if (category === "Other" && !customCategory) {
+                return NextResponse.json(
+                  { error: "Custom category name is required for 'Other' category" },
+                  { status: 400 }
+                );
+              }
 
             const parsedDate = new Date(date);
             const parsedAmount = parseFloat(amount);
@@ -36,6 +45,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 incomeSource,
                 date: parsedDate,
                 category,
+                customCategory: category === "Other" ? customCategory : "",
                 amount: parsedAmount,
                 description,
                 workspace: {connect: { id: workspaceId } },
