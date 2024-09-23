@@ -48,13 +48,12 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        setLoading(true)
+        setError('')
 
         const expenseCategory = category === "Other" ? customCategory : category;
        
-
-        setLoading(true)
-        setError('')
-        console.log("am gettig called")
+        
         if (!expenseName || !date || !amount || !category) {
           setError('All fields are required');
           setLoading(false)
@@ -85,13 +84,13 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
         queryClient.invalidateQueries({
           queryKey:['workspace', workspaceId, {type: "done"}]
         })
+        setOpen(true)
       } else {
         setAlertTitle('Error');
         setAlertMessage('Failed to create expense.');
         setIsDialogOpen(true)
       }
     } catch (error) {
-      console.error('Error:', error);
       setAlertTitle('Error');
       setAlertMessage('An error occurred while submitting the form.');
       setIsDialogOpen(true);
@@ -101,12 +100,22 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     }
   }   
   
-  const handleAlertDialogOk = () => {
+  // const handleAlertDialogOk = () => {
+  //   setIsDialogOpen(false);
+  //   setOpen(false);
+  //   setError('')
+  //   setLoading(false) 
+  // };
+  function handleAlertDialogOk() {
     setIsDialogOpen(false);
-    setOpen(false);
+    if (alertTitle === "Error") {
+      setOpen(true); 
+    } else {
+      setOpen(false); 
+    }
     setError('')
-    setLoading(false) 
-  };
+    setLoading(false)
+  }
   return (
     <Dialog open={open} onOpenChange={setOpen}>
     <DialogTrigger className='py-2 px-4 w-full inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-green-500 text-white hover:bg-green-600'>

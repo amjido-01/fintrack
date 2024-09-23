@@ -50,7 +50,7 @@ const Page = () => {
    const [currency, setCurrency] = useState("")
    const [workspaceNameValue, setWorkspaceNameValue] = useState('');
    const [errors, setErrors] = useState<{ workspaceName?: string; description?: string, currency?: string }>({});
-//    const [open, setOpen] = useState(false);
+  //const [open, setOpen] = useState(false);
 
    const userId = session?.user.id;
     
@@ -95,7 +95,6 @@ const Page = () => {
             setLoading(false);
             setIsDialogOpen(true);
           } else {
-            
             setErrors(response.data.error || 'Workspace creation failed');
           }
         } catch (err) {
@@ -171,7 +170,7 @@ const Page = () => {
       </SelectContent>
       </Select>
       {errors.currency && <p className="text-red-500 text-sm mt-1">{errors.currency}</p>}
-    </div>
+        </div>
 
         <div className="mt-4">
         <Label htmlFor="description">Description</Label>

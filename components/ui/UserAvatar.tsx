@@ -1,6 +1,7 @@
+"use client"
 import React from 'react';
 import { signOut } from 'next-auth/react';
-import { LogOut } from 'lucide-react';
+import { LogOut, Settings2 } from 'lucide-react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { ChevronDown } from 'lucide-react';
@@ -14,8 +15,10 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
   import { Button } from './button'
+  import { useRouter } from 'next/navigation'
 const UserAvatar = () => {
     const { data: session, status } = useSession()
+    const router = useRouter()
   return (
     <DropdownMenu>
   <DropdownMenuTrigger className='flex gap-2 items-center px-3'>
@@ -45,6 +48,13 @@ const UserAvatar = () => {
         )}
         </div>
     </DropdownMenuLabel>
+    <DropdownMenuSeparator />
+    <DropdownMenuItem>
+     <Button size="sm" onClick={() => router.push("/setting")} className="w-full bg-transparent justify-start hover:bg-transparent text-white tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring "> 
+     <Settings2 className="mr-2 h-4 w-4" />
+        Setting
+        </Button>
+    </DropdownMenuItem>
     <DropdownMenuSeparator />
     <DropdownMenuItem>
      <Button size="sm" onClick={() => signOut({callbackUrl: "/"})} className="w-full bg-transparent justify-start hover:bg-transparent text-white tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring "> 

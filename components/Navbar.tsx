@@ -3,10 +3,8 @@ import React from 'react';
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import {ModeToggle} from "@/components/ui/ModeToggle";
-import { Button } from './ui/button';
 import { usePathname } from 'next/navigation';
 import UserAvatar from './ui/UserAvatar';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 
 // const NavLinks = [
