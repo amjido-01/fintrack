@@ -79,7 +79,7 @@ const Page = () => {
       return res.data;
     }
   
-    const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces'], queryFn: getWorkspaces});
+    const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces', {type: "done"}], queryFn: getWorkspaces});
 
     const {data: currentWorkSpace, isLoading:currentLoading, error:currentError, refetch:refetchCurrentWorkspace} = useQuery(
       {queryKey: ['workspace', workspaceId, {type: "done"}], queryFn: getWorkspace});

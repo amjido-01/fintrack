@@ -10,7 +10,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import Popover from './Popover';
-// import useWorkspaceStore from '@/store/useWorkspaceStore';
 import {
   Dialog,
   DialogContent,
@@ -18,13 +17,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast"
 import {  Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue, } from '@/components/ui/select';
-
+  SelectValue, 
+} from '@/components/ui/select';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Define Zod schema
 const workspaceSchema = z.object({
@@ -38,7 +39,9 @@ const currencies = ["AED", "USD", "NGN", "SAR", "QAR"]
 
 const WorkSpaceDialog = () => {
   // connst {setWorkspaces} = useWorkspaceStore();
+  const  queryClient  = useQueryClient();
   const router = useRouter();
+  const { toast } = useToast()
   const { data: session, status } = useSession();
 
    const [loading, setLoading] = useState(false);
@@ -77,47 +80,35 @@ const WorkSpaceDialog = () => {
     try {
       const response = await axios.post('/api/workspace', {
         workspaceName,
-        description
+        description,
+        currency,
       });
+      queryClient.invalidateQueries({
+        queryKey:['workspaces', {type: "done"}]
+      })
       
       setLoading(false);
-      console.log("response", response.data.id)
-      
-      // Check if the request was successful
+    
       if (response.status === 201) {
-        // get workspace id
-        
-        alert('Workspace created successfully');
-        setWorkspaceIdValue(response.data.id);
-        setWorkspaceNameValue(workspaceNameValue)
-        setWorkspaceName(''); // Reset workspace name input
-        setDescription("")
-        setCurrency("")
-        setAlertTitle('Workspace Created Successfully');
-        setAlertMessage('Your workspace has been created successfully.');
+     
+        setWorkspaceIdValue(response.data.id)
+        setWorkspaceNameValue(response.data.workspaceName)
         setIsDialogOpen(true);
+        setAlertTitle("Workspace Created Successfully");
+        setAlertMessage("Your workspace has been created successfully.");
+
         setOpen(false);
-        // window.location.href=`/user/${userId}/workspace/${workspaceName}/${response.data.id}/dashboard`
+
       } else {
-        setErrors(response.data.error || 'Workspace creation failed');
+        setErrors({ workspaceName: "Workspace creation failed" });
       }
     } catch (err) {
       setLoading(false);
-      if (axios.isAxiosError(err) && err.response) {
-        setErrors(err.response.data.error || 'Workspace creation failed');
-        setAlertTitle("Error");
-        setAlertMessage(err.response.data.error || "Workspace creation failed");
-        setIsDialogOpen(true);
-        setLoading(false);
-      } else {
+      setIsDialogOpen(true);  
       setAlertTitle("Error");
-      setAlertMessage("Workspace creation failed");
-      setIsDialogOpen(true);
-      setLoading(false);
-      }
-    } finally {
-      setLoading(false);
-    }
+      setAlertMessage("Workspace creation failed. Please try again.");
+      setOpen(true);
+  }
   }
 
   function handleAlertDialogOk() {
@@ -175,11 +166,6 @@ const WorkSpaceDialog = () => {
             {currency}
           </SelectItem>
         ))}
-    {/* {data && Object.entries(data).map(([code]) => (
-    <SelectItem key={code} value={code}>
-      {code}
-    </SelectItem>
-    ))} */}
   </SelectContent>
       </SelectContent>
       </Select>
@@ -198,7 +184,7 @@ const WorkSpaceDialog = () => {
       </DialogContent>
     </Dialog>
 
-{/* <Popover showCancelButton={false} alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} /> */}
+<Popover showCancelButton={false} alertDescription={alertMessage} alertTitle={alertTitle} isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} handleAlertDialogOk={handleAlertDialogOk} />
       </div>
 
     )

@@ -2,7 +2,6 @@
 import React from 'react';
 import { signOut } from 'next-auth/react';
 import { LogOut, Settings2 } from 'lucide-react';
-import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { ChevronDown } from 'lucide-react';
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar"
