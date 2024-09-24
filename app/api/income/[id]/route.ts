@@ -7,15 +7,15 @@ export async function GET(req: NextRequest, { params }: { params: { id: string}}
     try {
         const { id } = params;
 
-        const expense = await prisma.expense.findUnique({
+        const income = await prisma.income.findUnique({
             where: {id},
         });
 
-        if (!expense) {
-            return NextResponse.json({ error: "Expense not found" }, { status: 404 })
+        if (!income) {
+            return NextResponse.json({ error: "income not found" }, { status: 404 })
         }
 
-        return NextResponse.json(expense, { status: 200 });
+        return NextResponse.json(income, { status: 200 });
     } catch (error) {
         console.error("Error fetching expense:", error);
         return NextResponse.json({ error: "Failed to fetch expense" }, { status: 500 });
@@ -29,22 +29,22 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         const { id } = params;
         const body = await req.json();
 
-        const { expenseName, date, amount, category, note } = body;
+        const { incomeSource, date, amount, category, note } = body;
 
-        const updatedExpense = await prisma.expense.update({
+        const updatedIncome = await prisma.income.update({
             where: { id },
             data: {
-                expenseName,
+                incomeSource,
                 date: new Date(date),
                 amount: parseFloat(amount),
                 category,
-                note
+                // description
             }
         })
-        return NextResponse.json(updatedExpense, { status: 200 });
+        return NextResponse.json(updatedIncome, { status: 200 });
     } catch (error) {
-        console.error("Error updating expense:", error);
-        return NextResponse.json({ error: "Failed to update expense" }, { status: 500 });
+        console.error("Error updating income:", error);
+        return NextResponse.json({ error: "Failed to update income" }, { status: 500 });
     }
 }
 
@@ -54,7 +54,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     try {
         const { id } = params;
 
-        await prisma.expense.update({
+        await prisma.income.update({
             where: {id},
             data: {
                 isDeleted: true,
@@ -62,9 +62,9 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             }
         })
 
-        return NextResponse.json({ message: "Expense deleted successfully" }, { status: 200 });
+        return NextResponse.json({ message: "Income deleted successfully" }, { status: 200 });
     } catch (error) {
-        console.error("Error deleting expense:", error);
-        return NextResponse.json({ error: "Failed to delete expense" }, { status: 500 });
+        console.error("Error deleting income:", error);
+        return NextResponse.json({ error: "Failed to delete income" }, { status: 500 });
     }
 }

@@ -34,6 +34,7 @@ import WorkspaceSwitcher from "@/components/workspace-switcher"
 import IncomeDialog from '@/components/IncomeDialog';
 import {BadgeDollarSign, Banknote } from "lucide-react"
 import { Landmark, ArrowUpRight } from 'lucide-react';
+import { a } from '@tanstack/react-query-devtools/build/legacy/ReactQueryDevtools-Cn7cKi7o';
 interface Expense {
   id: string;
   expenseName: string;
@@ -92,7 +93,7 @@ const Page = () => {
       const trackTopCategory = (expenses: Expense[]) => {
         // Group expenses by category and sum up the amounts
 
-        const categoryTotals = expenses.reduce((acc: Record<string, number>, expense: Expense) => {
+        const categoryTotals = expenses?.filter((expense) => !expense.isDeleted).reduce((acc: Record<string, number>, expense: Expense) => {
           const { category, amount } = expense;
 
           if (!acc[category]) {
@@ -116,16 +117,17 @@ const Page = () => {
       //  function to get the highest income source
       const trackTopIncomeSource = (income: Income[]) => {
         // Group expenses by category and sum up the amounts
-
-        const incomeTotals = income.reduce((acc: Record<string, number>, income: Income) => {
+        console.log(income.filter((item) => !item.isDeleted), "from income")
+        const incomeTotals = income?.filter((income) => !income.isDeleted).reduce((acc: Record<string, number>, income: Income) => {
           const { incomeSource, amount } = income;
-          console.log(incomeSource, typeof amount, "from icomesourc")
 
           if (!acc[incomeSource]) {
             acc[incomeSource] = 0;
           }
 
           acc[incomeSource] += amount;
+          console.log(acc[incomeSource] += amount, "from income");
+          console.log(acc, "from income acc");
           return acc;
         }, {});
 
@@ -144,11 +146,11 @@ const Page = () => {
           // subtract the total expenses from the total income
           
           // total expenses
-          const total = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0);
+          const total = currentWorkSpace?.expenses.filter((item: any) => !item.isDeleted).reduce((acc: number, expense: Expense) => acc + expense.amount, 0);
           setTotalExpenses(total.toFixed(2));
 
           // total income
-          const totalIncome = currentWorkSpace?.income.reduce((acc: number, income: Income) => acc + income.amount, 0);
+          const totalIncome = currentWorkSpace?.income.filter((item: any) => !item.isDeleted).reduce((acc: number, income: Income) => acc + income.amount, 0);
           setTotalIncome(totalIncome.toFixed(2));
 
           // remaining income
@@ -156,7 +158,7 @@ const Page = () => {
           setBalance(balance);
 
           
-          const averageDailyExpense = currentWorkSpace?.expenses.reduce((acc: number, expense: Expense) => acc + expense.amount, 0) / currentWorkSpace?.expenses.length;
+          const averageDailyExpense = currentWorkSpace?.expenses.filter((item: any) => !item.isDeleted).reduce((acc: number, expense: Expense) => acc + expense.amount, 0) / currentWorkSpace?.expenses.length;
           const rounded = Math.round(averageDailyExpense * 100) / 100;
           setAverageDailyExpense(rounded);
           
@@ -168,7 +170,6 @@ const Page = () => {
         }
       }, [currentWorkSpace])
       
-      console.log(currentWorkSpace)
     
     if (isLoading) return  <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col items-center">

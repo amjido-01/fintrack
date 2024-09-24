@@ -26,6 +26,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Expense {
   id: string;
@@ -38,6 +39,7 @@ interface Expense {
 }
 
 const ExpensesPage = () => {
+  const queryClient = useQueryClient();
   const { workspaceId } = useParams();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [alertTitle, setAlertTitle] = useState("");
@@ -63,7 +65,7 @@ const ExpensesPage = () => {
     return res.data;
   };
 
-  const { data, isLoading, error, refetch: refetchCurrentWorkspace } = useQuery<
+  const { data, isLoading, error,  refetch: refetchCurrentWorkspace } = useQuery<
     any,
     Error
   >({
@@ -75,9 +77,11 @@ const ExpensesPage = () => {
   const deleteExpense = async (id: string) => {
     try {
       await axios.delete(`/api/expense/${id}`);
-      refetchCurrentWorkspace();
+      queryClient.invalidateQueries({
+        queryKey:['workspace', workspaceId, {type: "done"}]
+      })
+      // refetchCurrentWorkspace();
     } catch (error) {
-      console.error("Error deleting expense:", error);
     }
   };
 
@@ -103,7 +107,6 @@ const ExpensesPage = () => {
       setIsEditModalOpen(false); // Close the modal
       refetchCurrentWorkspace(); // Refresh the workspace data
     } catch (error) {
-      console.error("Error updating expense:", error);
     }
   };
 
@@ -160,12 +163,12 @@ const ExpensesPage = () => {
         <TableBody>
           {data?.expenses?.map((expense: Expense) => (
             <TableRow key={expense.id}>
-              <TableCell>{expense.date}</TableCell>
-              <TableCell>{expense.expenseName}</TableCell>
-              <TableCell>{expense.category}</TableCell>
-              <TableCell>${expense.amount.toFixed(2)}</TableCell>
+              <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{expense.date}</TableCell>
+              <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{expense.expenseName}</TableCell>
+              <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{expense.category}</TableCell>
+              <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>${expense.amount.toFixed(2)}</TableCell>
               <TableCell>
-                <DropdownMenu>
+              {expense.isDeleted ? <p className=" text-red-500 font-bold">Deleted</p> :  <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Toggle variant="outline" aria-label="Toggle actions">
                       <Ellipsis className="h-4 w-4" />
@@ -187,7 +190,8 @@ const ExpensesPage = () => {
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu>}
+
               </TableCell>
             </TableRow>
           ))}

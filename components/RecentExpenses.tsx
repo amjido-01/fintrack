@@ -18,7 +18,8 @@ import {
 
   
   export function RecentExpenses({ expenses}: { expenses: Expense[] }) {
-    const onlyTenExpenses = expenses?.slice(0, 5)
+    const onlyNotDeleted = expenses?.filter((item) => !item.isDeleted)
+    const onlyTenExpenses = onlyNotDeleted?.slice(0, 5)
     const expenseList = onlyTenExpenses?.map(expense => 
       <li key={expense.id} className="flex items-center list-none">
       <Avatar className="h-9 w-9">

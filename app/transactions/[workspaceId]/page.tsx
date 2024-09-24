@@ -25,7 +25,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Loader2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 interface Income {
@@ -39,16 +39,16 @@ interface Income {
   }
 
 const Page = () => {
+  const queryClient = useQueryClient();
     const { workspaceId } = useParams();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [alertTitle, setAlertTitle] = useState("");
     const [loading, setLoading] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
-    const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(
+    const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(
     null
   );
 
-  console.log(workspaceId, "workspaceId");
   
     const getWorkspace = async () => {
         const res = await axios.get(`/api/get-workspace/${workspaceId}`);
@@ -59,27 +59,40 @@ const Page = () => {
         any,
         Error
       >({
-        queryKey: ["workspace", workspaceId],
+        queryKey: ["workspace", workspaceId, {type: "done"}],
         queryFn: getWorkspace,
       });
-      console.log(data, "data from transaltions Page");
+
+
+      const deleteIncome = async (id: string) => {
+        try {
+          await axios.delete(`/api/income/${id}`);
+          queryClient.invalidateQueries({
+            queryKey:['workspace', workspaceId, {type: "done"}]
+          })
+          // refetchCurrentWorkspace();
+        } catch (error) {
+        }
+      };
 
       // Handle the delete confirmation popover
   const handleDeletePopover = (id: string) => {
-    setSelectedExpenseId(id);
+    setSelectedTransactionId(id);
     setAlertMessage("Are you sure you want to delete this transaction?");
     setAlertTitle("Delete Transaction");
     setIsDialogOpen(true);
   };
 
   const handleAlertDialogOk = () => {
-    if (selectedExpenseId) {
+    if (selectedTransactionId) {
       setLoading(true);
-    //   deleteExpense(selectedExpenseId);
+      deleteIncome(selectedTransactionId);
       setIsDialogOpen(false);
       setLoading(false);
     }
   };
+
+
   return (
     <div className="mt-20 container mx-auto">
       <div>
@@ -102,12 +115,12 @@ const Page = () => {
         <TableBody>
           {data?.income?.map((income: Income) => (
             <TableRow key={income.id}>
-              <TableCell>{income.date}</TableCell>
-              <TableCell>{income.incomeSource}</TableCell>
-              <TableCell>{income.category}</TableCell>
-              <TableCell>${income.amount.toFixed(2)}</TableCell>
+              <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{income.date}</TableCell>
+              <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{income.incomeSource}</TableCell>
+              <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{income.category}</TableCell>
+              <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>${income.amount.toFixed(2)}</TableCell>
               <TableCell>
-                <DropdownMenu>
+                {income.isDeleted ? <p className=" text-red-500 font-bold">Deleted</p>  : <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Toggle variant="outline" aria-label="Toggle actions">
                       <Ellipsis className="h-4 w-4" />
@@ -129,7 +142,7 @@ const Page = () => {
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                   </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu>}
               </TableCell>
             </TableRow>
           ))}

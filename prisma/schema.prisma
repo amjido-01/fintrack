@@ -55,6 +55,9 @@ model Expense {
   customCategory String?
   amount      Float
   createdAt   DateTime   @default(now())
+  isDeleted   Boolean @default(false)
+  deletedAt   DateTime?
+  deletedBy   String?
   workspace   Workspace  @relation(fields: [workspaceId], references: [id])
   workspaceId String
   user        User       @relation(fields: [userId], references: [id])
@@ -72,6 +75,9 @@ model Income {
   amount        Float
   description  String
   createdAt   DateTime   @default(now())
+  isDeleted   Boolean @default(false)
+  deletedAt   DateTime?
+  deletedBy   String?
    workspace   Workspace  @relation(fields: [workspaceId], references: [id])
    workspaceId String
     user        User       @relation(fields: [userId], references: [id])
