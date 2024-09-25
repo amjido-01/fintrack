@@ -30,6 +30,7 @@ import { MainNav } from "@/components/main-nav"
 import { RecentExpenses } from "@/components/RecentExpenses"
 import UserAvatar from '@/components/ui/UserAvatar';
 import { Search } from "@/components/search"
+import {ModeToggle} from "@/components/ui/ModeToggle";
 import WorkspaceSwitcher from "@/components/workspace-switcher"
 import IncomeDialog from '@/components/IncomeDialog';
 import {BadgeDollarSign, Banknote } from "lucide-react"
@@ -217,6 +218,7 @@ const Page = () => {
               <MainNav className="mx-6" />
              
               <div className="ml-auto flex items-center space-x-4">
+              <div><ModeToggle /></div>
                 {hasIncome && <Search />}
                 <UserAvatar />
               </div>
