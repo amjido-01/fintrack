@@ -35,7 +35,6 @@ import WorkspaceSwitcher from "@/components/workspace-switcher"
 import IncomeDialog from '@/components/IncomeDialog';
 import {BadgeDollarSign, Banknote } from "lucide-react"
 import { Landmark, ArrowUpRight } from 'lucide-react';
-import { a } from '@tanstack/react-query-devtools/build/legacy/ReactQueryDevtools-Cn7cKi7o';
 interface Expense {
   id: string;
   expenseName: string;
@@ -57,16 +56,14 @@ interface Income {
 }
 
 const Page = () => {
-    // const searchParams  = useSearchParams();
     const [workspaceExpense, setWorkspaceExpense] = useState([]);
-    const { data: session, status } = useSession();
+    const { data: session } = useSession();
     const [totalExpenses, setTotalExpenses] = useState(0);
     const [totalIncome, setTotalIncome] = useState(0);
     const [balance, setBalance] = useState<string | number>(0);
     const [averageDailyExpense, setAverageDailyExpense] = useState(0);
     const [topCategory, setTopCategory] = useState("");
     const [topIncome, setTopIncome] = useState("")
-    // const [workspaceData, setWorkspaceData] = useState(null);
 
     let {workspaceId}  = useParams()
     
@@ -170,7 +167,11 @@ const Page = () => {
           trackTopIncomeSource(currentWorkSpace.income);
         }
       }, [currentWorkSpace])
-      
+
+      // get the total number of expenses
+      const expenseLenght = currentWorkSpace?.expenses.filter((item: any) => !item.isDeleted).length;
+
+      console.log(expenseLenght, "from expense lenght")
     
     if (isLoading) return  <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col items-center">
@@ -189,7 +190,7 @@ const Page = () => {
     </div>
 </div>;
     
-    const userId = session?.user?.id
+    const userId = session?.user?.id as string
 
   const TopCategorySvg = (<svg
     xmlns="http://www.w3.org/2000/svg"
@@ -214,8 +215,11 @@ const Page = () => {
 
           <div className="border-b">
             <div className="flex h-16 items-center px-4">
-              <WorkspaceSwitcher workspaces={workspaces}  />
-              <MainNav className="mx-6" />
+
+             <div className='flex items-center space-x-4'>
+             <WorkspaceSwitcher workspaces={workspaces}  />
+             <MainNav userId={userId} workspaceId={workspaceId as string} workspaceName={currentWorkSpace?.workspaceName} />
+             </div>
              
               <div className="ml-auto flex items-center space-x-4">
               <div><ModeToggle /></div>
@@ -300,10 +304,10 @@ const Page = () => {
                   <Card className="w-full md:w-1/2">
                     <CardHeader>
                       <CardTitle className='flex justify-between items-center'>Recent Expenses
-                        {currentWorkSpace?.expenses.length > 0 && <Link href={`/expenses/${workspaceId}`}><ArrowUpRight /></Link>}
+                        {currentWorkSpace?.expenses.filter((expense: Expense) => expense.isDeleted === false).length > 0 && <Link href={`/expenses/${workspaceId}`}><ArrowUpRight /></Link>}
                       </CardTitle>
                       <CardDescription>
-                        You have {currentWorkSpace?.expenses.length} expenses so far.
+                        You have {expenseLenght} expenses so far.
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -320,7 +324,7 @@ const Page = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pl-2">
-                    <TransactionsList income={currentWorkSpace?.income} />
+                    <TransactionsList currency={currentWorkSpace?.currency} income={currentWorkSpace?.income} />
                   </CardContent>
                   </Card>
                     </div>

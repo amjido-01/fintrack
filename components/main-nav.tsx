@@ -1,40 +1,56 @@
+"use client"
 import Link from "next/link"
 import { Button } from "./ui/button"
 import { cn } from "@/lib/utils"
+import { usePathname } from "next/navigation"
+
+interface MainNavProps extends React.HTMLAttributes<HTMLElement> {
+  workspaceId: string
+  userId: string
+  workspaceName: string
+}
 
 export function MainNav({
   className,
+  workspaceId,
+  userId, 
+  workspaceName,
   ...props
-}: React.HTMLAttributes<HTMLElement>) {
+}: MainNavProps) {
+  const pathname = usePathname()
+
+  const isActive = (href: string) => {
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
+
   return (
     <nav
       className={cn("flex items-center space-x-4 lg:space-x-6", className)}
       {...props}
     >
       <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium transition-colors hover:text-primary"
+        href={`/user/${userId}/workspace/${workspaceName}/${workspaceId}/dashboard`}
+        className={cn(
+          "text-sm font-medium transition-colors hover:text-primary",
+          isActive(`/user/${userId}/workspace/${workspaceName}/${workspaceId}/dashboard`)
+            ? "text-primary"
+            : "text-muted-foreground"
+        )}
       >
         Overview
       </Link>
-      {/* <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Customers
-      </Link>
+    
       <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-      >
-        Products
-      </Link>
-      <Link
-        href="/examples/dashboard"
-        className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
+        href={`/setting/${workspaceId}`}
+        className={cn(
+          "text-sm font-medium transition-colors hover:text-primary",
+          isActive(`/setting/${workspaceId}`)
+            ? "text-primary"
+            : "text-muted-foreground"
+        )}
       >
         Settings
-      </Link> */}
+      </Link>
     </nav>
   )
 }

@@ -19,7 +19,10 @@ import {
   }
 
 
-  export function TransactionsList({ income }: { income: Income[] }) {
+
+  export function TransactionsList({ income, currency }: { income: Income[], currency: string }) {
+
+    const workspaceCurrency = currency === "USD" ? "$" : currency === "NGN" ? "₦" : currency === "SAR" ? "ر.س" : currency === "QAR" ? "ر.ق" : currency === "AED" ? "د.إ" : "₦";
     const onlyNotDeleted = income?.filter((income) => !income.isDeleted)
     const onlyTenIncome = onlyNotDeleted?.slice(0, 5)
     return (
@@ -38,7 +41,7 @@ import {
               <TableCell>{income?.date}</TableCell>
               <TableCell>{income?.description}</TableCell>
               <TableCell>{income?.category}</TableCell>
-              <TableCell>${income?.amount.toFixed(2)}</TableCell>
+              <TableCell>{ workspaceCurrency + " " + income?.amount.toFixed(2)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
