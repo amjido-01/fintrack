@@ -43,6 +43,7 @@ interface Expense {
   category: string;
   note: string;
   workspaceId: string;
+  isDeleted: boolean;
 }
 
 interface Income {
@@ -53,6 +54,7 @@ interface Income {
   category: string;
   description: string;
   workspaceId: string;
+  isDeleted: boolean
 }
 
 const Page = () => {
@@ -115,7 +117,6 @@ const Page = () => {
       //  function to get the highest income source
       const trackTopIncomeSource = (income: Income[]) => {
         // Group expenses by category and sum up the amounts
-        console.log(income.filter((item) => !item.isDeleted), "from income")
         const incomeTotals = income?.filter((income) => !income.isDeleted).reduce((acc: Record<string, number>, income: Income) => {
           const { incomeSource, amount } = income;
 
@@ -124,8 +125,6 @@ const Page = () => {
           }
 
           acc[incomeSource] += amount;
-          console.log(acc[incomeSource] += amount, "from income");
-          console.log(acc, "from income acc");
           return acc;
         }, {});
 
@@ -171,7 +170,6 @@ const Page = () => {
       // get the total number of expenses
       const expenseLenght = currentWorkSpace?.expenses.filter((item: any) => !item.isDeleted).length;
 
-      console.log(expenseLenght, "from expense lenght")
     
     if (isLoading) return  <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col items-center">

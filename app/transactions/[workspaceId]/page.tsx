@@ -50,6 +50,13 @@ import { useQueryClient } from "@tanstack/react-query";
 import { MainNav } from "@/components/main-nav";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import {  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue, } from '@/components/ui/select';
+  import { Textarea } from "@/components/ui/textarea";
+  
 interface Income {
     id: string;
     incomeSource: string;
@@ -58,12 +65,17 @@ interface Income {
     category: string;
     description: string;
     workspaceId: string;
+    isDeleted: boolean
   }
+
+  
+const categories = ["Salary", "Business", "Freelance", "Investment", "Gift", "Other"
+]
 
 const Page = () => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
-    const { workspaceId } = useParams();
+  const { workspaceId } = useParams();
 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -74,8 +86,18 @@ const Page = () => {
     const [selectedTransactionId, setSelectedTransactionId] = useState<string | null>(
     null
   );
+  const [selectedIncome, setSelectedIncome] = useState<Income | null>(null);
 
-  const userId = session?.user?.id;
+
+    const [incomeSource, setIncomeSource] = useState('')
+    const [amount, setAmount] = useState<number>()
+    // const [error, setError] = useState('')
+    const [date, setDate] = useState('')
+    const [description, setDescription] = useState('')
+    const [category, setCategory] = useState(categories[0])
+    const [customCategory, setCustomCategory] = useState<string | null>(null)
+
+    const userId = session?.user?.id;
   
     const getWorkspace = async () => {
         const res = await axios.get(`/api/get-workspace/${workspaceId}`);
@@ -98,6 +120,7 @@ const Page = () => {
       const deleteIncome = async (id: string) => {
         try {
           await axios.delete(`/api/income/${id}`);
+          refetchCurrentWorkspace();
           queryClient.invalidateQueries({
             queryKey:['workspace', workspaceId, {type: "done"}]
           })
@@ -127,8 +150,9 @@ const Page = () => {
       };
       
     
-      const handleEditPopover = (id: string) => {
-        setSelectedTransactionId(id);
+      const handleEditPopover = (income: Income) => {
+        setSelectedTransactionId(income?.id);
+        setSelectedIncome(income)
         setIsEditDialogOpen(true);
       };
 
@@ -148,9 +172,33 @@ const Page = () => {
         setIsEditFormOpen(true);
       }
 
-      const handleEditSave = () => {
+      const handleEditSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!selectedTransactionId || !selectedIncome) return;
+      
+        setLoading(true);
+      
+        const updatedIncome = {
+          ...selectedIncome,
+          incomeSource,
+          amount,
+          category,
+          date,
+          description,
+        };
+      
+        try {
+          await editIncome(selectedTransactionId, updatedIncome);
+          setIsEditFormOpen(false);
+          setLoading(false);
+          refetchCurrentWorkspace(); // Fetch updated data after saving
+        } catch (error) {
+          console.error("Error saving income:", error);
+          setLoading(false);
+        }
+      };
+      
 
-      }
 
       if (isLoading) return  <div className="flex justify-center items-center h-screen">
       <div className="flex flex-col items-center">
@@ -164,6 +212,8 @@ if (error) return <div className="flex justify-center items-center h-screen">
   <p>An error has occured while fetching data</p>
 </div>
 </div>;
+
+console.log(data, "from list")
  
   return (
     <div className=" container mx-auto mt-16">
@@ -208,7 +258,7 @@ if (error) return <div className="flex justify-center items-center h-screen">
                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                      <DropdownMenuItem onClick={() => handleEditPopover(income.id)}>
+                      <DropdownMenuItem onClick={() => handleEditPopover(income)}>
                         <Edit2Icon className="mr-2 h-4 w-4" />
                         <span>Edit</span>
                         <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
@@ -272,70 +322,70 @@ if (error) return <div className="flex justify-center items-center h-screen">
           <DialogHeader>
             <DialogTitle>Edit Transaction</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleEditSave}>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="incomeSource" className="text-right">
-                  Income Source
-                </Label>
-                <Input
-                  id="incomeSource"
-                  name="incomeSource"
-                  // defaultValue={selectedIncome?.incomeSource}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="amount" className="text-right">
-                  Amount
-                </Label>
-                <Input
-                  id="amount"
-                  name="amount"
-                  type="number"
-                  // defaultValue={selectedIncome?.amount}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="date" className="text-right">
-                  Date
-                </Label>
-                <Input
-                  id="date"
-                  name="date"
-                  type="date"
-                  // defaultValue={selectedIncome?.date}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="category" className="text-right">
-                  Category
-                </Label>
-                <Input
-                  id="category"
-                  name="category"
-                  // defaultValue={selectedIncome?.category}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <Input
-                  id="description"
-                  name="description"
-                  // defaultValue={selectedIncome?.description}
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button className="text-white" type="submit">Save changes</Button>
-            </DialogFooter>
-          </form>
+          <form  className="space-y-4">
+      {/* {error && <div style={{ color: 'red' }}>{error}</div>} */}
+    <div>
+      <Label htmlFor="name">Income Source</Label>
+      <Input
+        id="incomeSource"
+        type="text"
+        name='incomeSource'
+        value={incomeSource || selectedIncome?.incomeSource || ""}
+        onChange={(e) => setIncomeSource(e.target.value)}
+        placeholder="e.g., Salary, Freelance, Gift"
+        className="mt-1"
+      />
+      {/* {error && <p className="text-red-500 text-sm mt-1">{error}</p>} */}
+    </div>
+    <div className="mt-1">
+      <Label htmlFor="amount">Amount</Label>
+      <Input
+        id="amount"
+        type="number"
+        name='amount'
+        value={amount || selectedIncome?.amount || ""}
+        onChange={(e) =>  setAmount(Number(e.target.value))}
+        placeholder="Enter amount"
+        className="mt-1"
+      />
+      {/* {error && <p className="text-red-500 text-sm mt-1">{error}</p>} */}
+    </div>
+    <div className="mt-1">
+    <Label htmlFor="category">Category</Label>
+      <Select value={category || selectedIncome?.category || categories[0]} onValueChange={(value) => setCategory(value)}>
+      <SelectTrigger>
+      <SelectValue placeholder="Select a category" />
+      </SelectTrigger>
+      <SelectContent>
+        {categories.map((cat) => (
+          <SelectItem key={cat} value={cat}>
+            {cat}
+          </SelectItem>
+        ))}
+      </SelectContent>
+      </Select>
+    </div>
+
+   
+
+    <div className="mt-1">
+      {/* date picker */}
+      <label htmlFor="date">Date</label>
+      <input type="date" id="date" name="date" value={date || selectedIncome?.date || ""} onChange={(e) => setDate(e.target.value)} />
+    </div>
+
+    <div className="mt-1">
+    <Label htmlFor="description">Description </Label>
+    <Textarea value={description || selectedIncome?.description || ""} onChange={(e) => setDescription(e.target.value)} className='mt-1' name='description' required placeholder="Optional additional notes." id="note" />
+  </div>
+    <div className="mt-6">
+      {loading? <Button className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600" disabled>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      Please wait
+    </Button> : <Button type="submit" className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600"> Add Income </Button>}
+
+    </div>
+  </form>
         </DialogContent>
       </Dialog>
 

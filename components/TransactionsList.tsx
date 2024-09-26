@@ -16,6 +16,7 @@ import {
     category: string;
     description: string;
     workspaceId: string;
+    isDeleted: boolean
   }
 
 

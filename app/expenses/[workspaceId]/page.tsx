@@ -22,6 +22,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue, } from '@/components/ui/select';
+  import { Textarea } from "@/components/ui/textarea";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,8 +62,11 @@ interface Expense {
   date: string;
   category: string;
   note: string;
+  isDeleted: boolean;
   workspaceId: string;
 }
+
+const categories = ["Food", "Clothing", "Transportation", "Entertainment", "Medical", "Other"]
 
 const ExpensesPage = () => {
   const {data: session} = useSession();
@@ -74,6 +83,13 @@ const ExpensesPage = () => {
   const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(
     null
   );
+
+  const [expenseName, setExpenseName] = useState('')
+  const [date, setDate] = useState('')
+  const [category, setCategory] = useState(categories[0])
+  const [amount, setAmount] = useState('')
+  const [customCategory, setCustomCategory] = useState("")
+  const [note, setNote] = useState("")
 
   // const [editExpense, setEditExpense] = useState<Partial<Expense>>({
   //   id: "",
@@ -105,6 +121,7 @@ const ExpensesPage = () => {
   const deleteExpense = async (id: string) => {
     try {
       await axios.delete(`/api/expense/${id}`);
+      refetchCurrentWorkspace();
       queryClient.invalidateQueries({
         queryKey:['workspace', workspaceId, {type: "done"}]
       })
@@ -276,70 +293,80 @@ const ExpensesPage = () => {
           <DialogHeader>
             <DialogTitle>Edit Transaction</DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleEditSave}>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="incomeSource" className="text-right">
-                  Income Source
-                </Label>
-                <Input
-                  id="incomeSource"
-                  name="incomeSource"
-                  // defaultValue={selectedIncome?.incomeSource}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="amount" className="text-right">
-                  Amount
-                </Label>
-                <Input
-                  id="amount"
-                  name="amount"
-                  type="number"
-                  // defaultValue={selectedIncome?.amount}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="date" className="text-right">
-                  Date
-                </Label>
-                <Input
-                  id="date"
-                  name="date"
-                  type="date"
-                  // defaultValue={selectedIncome?.date}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="category" className="text-right">
-                  Category
-                </Label>
-                <Input
-                  id="category"
-                  name="category"
-                  // defaultValue={selectedIncome?.category}
-                  className="col-span-3"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">
-                  Description
-                </Label>
-                <Input
-                  id="description"
-                  name="description"
-                  // defaultValue={selectedIncome?.description}
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button className="text-white" type="submit">Save changes</Button>
-            </DialogFooter>
-          </form>
+          <form  className="space-y-4">
+    <div>
+      <Label htmlFor="name">Expense Name</Label>
+      <Input
+        id="expenseName"
+        type="text"
+        name='expenseName'
+        value={expenseName}
+        onChange={(e) => setExpenseName(e.target.value)}
+        placeholder="Enter workspace name"
+        className="mt-1"
+      />
+    </div>
+    <div className="mt-1">
+      <Label htmlFor="amount">Amount</Label>
+      <Input
+        id="amount"
+        type="number"
+        name='amount'
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        placeholder="Enter amount"
+        className="mt-1"
+      />
+    </div>
+    <div className="mt-1">
+    <Label htmlFor="category">Category</Label>
+      <Select value={category} onValueChange={(value) => {
+        console.log("Selected category:", value);
+        setCategory(value)
+        }}>
+      <SelectTrigger>
+      <SelectValue placeholder="Select a category" />
+      </SelectTrigger>
+      <SelectContent>
+        {categories.map((cat) => (
+          <SelectItem key={cat} value={cat}>
+            {cat}
+          </SelectItem>
+        ))}
+      </SelectContent>
+      </Select>
+    </div>
+
+        {category === "Other" && <div className="mt-1">
+          <Label htmlFor="customCategory">Custom Category</Label>
+          <Input
+            id="customCategory"
+            type="text"
+            name='customCategory'
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
+            placeholder="Enter custom category"
+            className="mt-1"
+          />
+        </div>} 
+
+    <div className="mt-1">
+      <label htmlFor="date">Date</label>
+      <input type="date" id="date" name="date" value={date} onChange={(e) => setDate(e.target.value)} />
+    </div>
+
+    <div className="mt-1">
+    <Label htmlFor="note">Note</Label>
+    <Textarea value={note} onChange={(e) => setNote(e.target.value)} className='mt-1' name='description' required placeholder="Optional additional notes." id="note" />
+  </div>
+    <div className="mt-6">
+      {loading? <Button className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600" disabled>
+      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      Please wait
+    </Button> : <Button type="submit" className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600"> Add Expense </Button>}
+
+    </div>
+      </form>
         </DialogContent>
       </Dialog>
 

@@ -14,6 +14,7 @@ import {
     note: string;
     workspaceId: string;
     onExpenseAdded: () => void;
+    isDeleted: boolean;
   }
 
   

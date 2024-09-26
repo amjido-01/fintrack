@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ChartConfig,
@@ -25,6 +25,7 @@ interface Expense {
   category: string;
   note: string;
   workspaceId: string;
+  isDeleted: boolean;
 }
 
 type Timeframe = 'weekly' | 'monthly' | 'yearly';
@@ -34,7 +35,9 @@ type ChartDataPoint = {
   fill: string;
 };
 
-const chartConfig = {
+type Category = 'Food' | 'Clothing' | 'Medical' | 'Transportation' | 'Entertainment' | 'Other';
+
+const chartConfig:  Record<Category, { label: string; color: string }> = {
   Food: {
     label: "Food",
     color: "hsl(var(--color-food))",
@@ -69,13 +72,28 @@ export function ExpensesByCategory({ expenses }: { expenses: Expense[] }) {
     yearly: [],
   });
 
-  useEffect(() => {
-    const currentDate = new Date();
-    const timeFrameInt = timeframe === "weekly" ? 7 : timeframe === "monthly" ? 30 : 365;
-    const pastDate = new Date(currentDate.getTime() - timeFrameInt * 24 * 60 * 60 * 1000);
+  const timeFrameDays = useMemo(() => {
+    return timeframe === "weekly" ? 7 : timeframe === "monthly" ? 30 : 365;
+  }, [timeframe]);
 
-    // Initialize category totals
-    const categoryTotals = {
+  const filteredExpenses = useMemo(() => {
+    const currentDate = new Date();
+    const pastDate = new Date(currentDate.getTime() - timeFrameDays * 24 * 60 * 60 * 1000);
+
+    return expenses?.filter((expense: Expense) => {
+      const expenseDate = new Date(expense.date);
+      // Exclude deleted expenses using `isDeleted`
+      return !expense.isDeleted && expenseDate >= pastDate && expenseDate <= currentDate;
+    });
+  }, [expenses, timeFrameDays]);
+
+  useEffect(() => {
+    if (!filteredExpenses?.length) {
+      setChartData((oldChartData) => ({ ...oldChartData, [timeframe]: [] }));
+      return;
+    }
+
+    const categoryTotals: Record<Category, number> = {
       Food: 0,
       Clothing: 0,
       Medical: 0,
@@ -84,19 +102,11 @@ export function ExpensesByCategory({ expenses }: { expenses: Expense[] }) {
       Other: 0,
     };
 
-    // Filter and process expenses within the selected timeframe
-    const filteredExpenses = expenses?.filter((expense: Expense) => {
-      const expenseDate = new Date(expense.date);
-      return expenseDate >= pastDate && expenseDate <= currentDate;
-    });
-
-    console.log("Filtered Expenses:", filteredExpenses); // Debugging log
-
     filteredExpenses.forEach((expense: Expense) => {
-      // Normalize the category name
-      const normalizedCategory = expense.category.charAt(0).toUpperCase() + expense.category.slice(1).toLowerCase();
-      
-      // Add amount to corresponding category or "Other" if it's not listed
+      const normalizedCategory = (expense.category.charAt(0).toUpperCase() +
+        expense.category.slice(1).toLowerCase()) as Category;
+
+      // Increment the amount for the matching category or "Other"
       if (normalizedCategory in categoryTotals) {
         categoryTotals[normalizedCategory] += expense.amount;
       } else {
@@ -110,47 +120,55 @@ export function ExpensesByCategory({ expenses }: { expenses: Expense[] }) {
       .map(([category, amount]) => ({
         category,
         amount,
-        fill: chartConfig[category].color,
+        fill: chartConfig[category as Category].color,
       }));
 
-    setChartData(oldChartData => ({ ...oldChartData, [timeframe]: updatedChartData }));
-  }, [expenses, timeframe]);
+    setChartData((oldChartData) => ({ ...oldChartData, [timeframe]: updatedChartData }));
+  }, [filteredExpenses, timeframe]);
 
   return (
     <Card className="flex flex-col w-full md:w-1/2 pb-4">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div>
-          <CardTitle>Total Expenses By Category</CardTitle>
-          <CardDescription>Breakdown of expenses by category</CardDescription>
-        </div>
-        <Select
-          value={timeframe}
-          onValueChange={(value: Timeframe) => setTimeframe(value)}
-        >
-          <SelectTrigger className="w-[120px]">
-            <SelectValue placeholder="Select timeframe" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="weekly">Weekly</SelectItem>
-            <SelectItem value="monthly">Monthly</SelectItem>
-            <SelectItem value="yearly">Yearly</SelectItem>
-          </SelectContent>
-        </Select>
-      </CardHeader>
-      <CardContent className="flex-1 pb-0">
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <div>
+        <CardTitle>Total Expenses By Category</CardTitle>
+        <CardDescription>Breakdown of expenses by category</CardDescription>
+      </div>
+      <Select
+        value={timeframe}
+        onValueChange={(value: Timeframe) => setTimeframe(value)}
+      >
+        <SelectTrigger className="w-[120px]">
+          <SelectValue placeholder="Select timeframe" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="weekly">Weekly</SelectItem>
+          <SelectItem value="monthly">Monthly</SelectItem>
+          <SelectItem value="yearly">Yearly</SelectItem>
+        </SelectContent>
+      </Select>
+    </CardHeader>
+    <CardContent className="flex-1 pb-0">
+      {chartData[timeframe].length === 0 ? (
+        <p className="text-center">No expenses to display for this timeframe.</p>
+      ) : (
         <ChartContainer
           config={chartConfig}
           className="mx-auto h-[300px] w-full"
         >
           <PieChart>
-            <Pie data={chartData[timeframe]} dataKey="amount" nameKey="category" />
+            <Pie
+              data={chartData[timeframe]}
+              dataKey="amount"
+              nameKey="category"
+            />
             <ChartLegend
               content={<ChartLegendContent nameKey="category" />}
               className="-translate-y-2 flex-wrap gap-2 [&>*]:basis-1/4 [&>*]:justify-center"
             />
           </PieChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+      )}
+    </CardContent>
+  </Card>
   );
 }
