@@ -31,11 +31,11 @@ import {
       <div className="ml-4 space-y-1">
         <p className="text-sm font-medium leading-none">{expense.expenseName}</p>
         <p className="text-sm text-muted-foreground">
-          {expense.date.toString()}
+          {new Date(expense.date).toDateString()}
         </p>
       </div>
       
-      <div className="ml-auto font-medium">N{expense.amount}</div>
+      <div className="ml-auto font-medium">N {expense.amount}</div>
       </li>
     )
 

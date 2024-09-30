@@ -43,6 +43,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -76,6 +77,7 @@ const Page = () => {
   const queryClient = useQueryClient();
   const { data: session } = useSession();
   const { workspaceId } = useParams();
+  const {toast} = useToast()
 
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -112,10 +114,8 @@ const Page = () => {
         queryKey: ["workspace", workspaceId, {type: "done"}],
         queryFn: getWorkspace,
       });
-      console.log(data)
 
       const workspaceCurrency = data?.currency === "USD" ? "$" : data?.currency === "NGN" ? "₦" : data?.currency === "SAR" ? "ر.س" : data?.currency === "QAR" ? "ر.ق" : data?.currency === "AED" ? "د.إ" : "₦";
-
 
       const deleteIncome = async (id: string) => {
         try {
@@ -124,8 +124,20 @@ const Page = () => {
           queryClient.invalidateQueries({
             queryKey:['workspace', workspaceId, {type: "done"}]
           })
-          // refetchCurrentWorkspace();
+
+          // show toast
+          toast({
+            title: "Workspace deleted",
+            description: "Income has been successfully deleted.",
+            variant: "default",
+          })
+
         } catch (error) {
+          toast({
+            title: "Error",
+            description: "Failed to delete income. Please try again.",
+            variant: "destructive",
+          })
           console.error("Error deleting income:", error);
         }
       };
@@ -213,7 +225,6 @@ if (error) return <div className="flex justify-center items-center h-screen">
 </div>
 </div>;
 
-console.log(data, "from list")
  
   return (
     <div className=" container mx-auto mt-16">
@@ -243,7 +254,7 @@ console.log(data, "from list")
         <TableBody>
           {data?.income?.map((income: Income) => (
             <TableRow key={income.id}>
-              <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{income.date}</TableCell>
+              <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{new Date(income.date).toDateString()}</TableCell>
               <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{income.incomeSource}</TableCell>
               <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{income.category}</TableCell>
               <TableCell className={`${income.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{workspaceCurrency + " " + income.amount.toFixed(2)}</TableCell>

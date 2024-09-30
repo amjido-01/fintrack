@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 
 interface DeleteWorkspaceProps {
     workspaceId: string
-    userWorkspace: number
+    userWorkspace: []
 }
 
 export default function DeleteWorkspace({workspaceId, userWorkspace}: DeleteWorkspaceProps) {
@@ -23,9 +23,7 @@ export default function DeleteWorkspace({workspaceId, userWorkspace}: DeleteWork
   const router = useRouter()
   const { data: session } = useSession()
   const userId = session?.user?.id
-
-    console.log(workspaceId, "from delete com")
-
+    
 
   const handleDelete = async () => {
 
@@ -44,7 +42,13 @@ export default function DeleteWorkspace({workspaceId, userWorkspace}: DeleteWork
     try {
       // Simulating API call
       await axios.delete(`/api/workspac/${workspaceId}`)
-      router.push(`/user/${userId}/workspaces`)
+      if (userWorkspace.length > 0) {
+        console.log("list")
+        router.push(`/user/${userId}/workspaces`)
+      } else {
+        router.push(`/createworkspace`)
+        console.log("create")
+      }
       toast({
         title: "Workspace deleted",
         description: "Your workspace has been successfully deleted.",

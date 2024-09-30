@@ -55,6 +55,7 @@ import { Loader2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { useToast } from "@/components/ui/use-toast";
 interface Expense {
   id: string;
   expenseName: string;
@@ -72,6 +73,7 @@ const ExpensesPage = () => {
   const {data: session} = useSession();
   const queryClient = useQueryClient();
   const { workspaceId } = useParams();
+  const { toast } = useToast()
 
      const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
      
@@ -125,7 +127,17 @@ const ExpensesPage = () => {
       queryClient.invalidateQueries({
         queryKey:['workspace', workspaceId, {type: "done"}]
       })
+      toast({
+        title: "Workspace deleted",
+        description: "Expense has been successfully deleted.",
+        variant: "default",
+      })
     } catch (error) {
+      toast({
+        title: "Workspace deleted",
+        description: "Failed to delete expense. Please try again.",
+        variant: "default",
+      })
       console.log("Error deleting expense:", error);
     }
   };
@@ -212,7 +224,7 @@ const ExpensesPage = () => {
         <TableBody>
           {data?.expenses?.map((expense: Expense) => (
             <TableRow key={expense.id}>
-              <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{expense.date}</TableCell>
+              <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{new Date(expense.date).toDateString()}</TableCell>
               <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{expense.expenseName}</TableCell>
               <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>{expense.category}</TableCell>
               <TableCell className={`${expense.isDeleted ? ' line-through opacity-[0.5]' : ''}`}>${expense.amount.toFixed(2)}</TableCell>

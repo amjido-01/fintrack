@@ -89,8 +89,8 @@ const Page = () => {
             setWorkspaceNameValue(workspaceNameValue)
             setAlertTitle('Workspace Created Successfully');
             setAlertMessage('Your workspace has been created successfully.');
-            setWorkspaceName(''); // Reset workspace name input
-            setDescription(''); // Reset description input
+            setWorkspaceName('');
+            setDescription(''); 
             setCurrency("")
             setLoading(false);
             setIsDialogOpen(true);

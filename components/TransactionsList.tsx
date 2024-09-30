@@ -39,7 +39,7 @@ import {
         <TableBody>
           {onlyTenIncome?.map((income) => (
             <TableRow key={income.id}>
-              <TableCell>{income?.date}</TableCell>
+              <TableCell>{new Date(income?.date).toDateString()}</TableCell>
               <TableCell>{income?.description}</TableCell>
               <TableCell>{income?.category}</TableCell>
               <TableCell>{ workspaceCurrency + " " + income?.amount.toFixed(2)}</TableCell>

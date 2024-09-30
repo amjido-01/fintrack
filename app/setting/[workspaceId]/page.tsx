@@ -53,7 +53,12 @@ const Page = () => {
   }
 
   const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces', {type: "done"}], queryFn: getWorkspaces});
-  console.log(workspaces, "from setting")
+  console.log(workspaces?.length, "from setting")
+
+  console.log(workspaces, "xxx")
+  
+  const userWorkspace = workspaces?.filter((workspace) => workspace.isDeleted === false);
+  console.log(userWorkspace)
 
   const userId = session?.user?.id
   const getWorkspace = async (): Promise<Workspace> => {
@@ -107,7 +112,7 @@ const Page = () => {
     })
   }
 
-  if (currentLoading) return <div className="flex justify-center items-center h-screen">
+  if (currentLoading) return <div className="flex text-primary justify-center items-center h-screen">
   <div className="flex flex-col items-center">
     <Loader2 className="h-6 w-6 animate-spin mb-2" />
     <p>please wait...</p>
@@ -171,7 +176,7 @@ const Page = () => {
         </div>
       </div>
       <div className='flex justify-center mt-10'>
-          <DeleteWorkspace userWorkspace={workspaces} workspaceId={workspaceId as string} />
+          <DeleteWorkspace userWorkspace={userWorkspace} workspaceId={workspaceId as string} />
         </div>
 
         <MiniFooter />

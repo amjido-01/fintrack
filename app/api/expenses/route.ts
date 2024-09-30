@@ -16,7 +16,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
             console.log("hello world")
             // const body = await req.json();
             const body = await req.json();
-            console.log('Received request body:', body);
         
             const { expenseName, date, amount, category, note, customCategory, workspaceId, userId } = body;
         
@@ -38,6 +37,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
               }
 
             const parsedDate = new Date(date);
+            
             const parsedAmount = parseFloat(amount);
             if (isNaN(parsedAmount)) {
                 return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             const expense = await prisma.expense.create({
                 data: {
                     expenseName,
-                    date: parsedDate,
+                    date: new Date(date),
                     note,
                     category,
                     customCategory: category === "Other" ? customCategory : null,

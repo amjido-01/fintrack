@@ -158,7 +158,6 @@ const ExpensesDialog: React.FC<Expense> = ({userId, workspaceId}) => {
     <div className="mt-1">
     <Label htmlFor="category">Category</Label>
       <Select value={category} onValueChange={(value) => {
-        console.log("Selected category:", value);
         setCategory(value)
         }}>
       <SelectTrigger>

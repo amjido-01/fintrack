@@ -88,11 +88,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
        income: true
      },
    })
-   console.log(hasWorkSpace, "hasWorkspace")
    return NextResponse.json(hasWorkSpace, { status: 200 });
 
  } catch (err) {
-   console.error('Error retrieving workspaces:', err);
    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
  }
 }

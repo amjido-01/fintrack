@@ -36,6 +36,7 @@ import WorkspaceSwitcher from "@/components/workspace-switcher"
 import IncomeDialog from '@/components/IncomeDialog';
 import {BadgeDollarSign, Banknote } from "lucide-react"
 import { Landmark, ArrowUpRight } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 interface Expense {
   id: string;
   expenseName: string;
@@ -212,7 +213,38 @@ const Page = () => {
     <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
   </svg>)
 
-    
+
+
+function PlaceholderChart() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>
+          <div className="h-4 w-[150px] bg-card rounded"></div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[200px] w-full bg-[#1f1f1f] rounded"></div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function PlaceholderDashboardCard() {
+  return (
+    <Card>
+    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <CardTitle className="text-sm font-medium">
+      <div className="h-1 w-[150px] bg-card rounded"></div>
+      </CardTitle>
+    </CardHeader>
+    <CardContent>
+    <div className="h-[150px] w-full bg-[#1f1f1f] rounded"></div>
+    </CardContent>
+  </Card>
+  )
+
+}
     return (
       <>
        
@@ -222,7 +254,7 @@ const Page = () => {
             <div className="flex h-16 items-center px-4">
 
              <div className='flex items-center space-x-4'>
-             <WorkspaceSwitcher workspaces={workspaces}  />
+             <WorkspaceSwitcher workspaces={workspaces?.filter((workspace) => !workspace.isDeleted)}  />
              <MainNav userId={userId} workspaceId={workspaceId as string} workspaceName={currentWorkSpace?.workspaceName} />
              </div>
              
@@ -239,14 +271,20 @@ const Page = () => {
 
             <div className="flex flex-col justify-start md:flex-row md:items-center md:justify-between space-y-2">
 
-              <div className='flex items-center  space-x-2 mb-2 md:mb-0'>
+              <div className='flex flex-col md:flex-row md:items-center justify-between w-full mb-2 md:mb-0'>
+
               <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+
+             <div>
+             {currentWorkSpace?.income.length  < 1 && <p>Please add income to start tracking your money.</p>}
+             </div>
 
               {hasIncome && <div>
               <ExpensesDialog userId={userId} workspaceId={workspaceId} />
-              </div>}
+              </div>
+              }
 
-              <div>
+              <div className='w-fit'>
                 <IncomeDialog userId={userId} workspaceId={workspaceId}  
                 />
               </div>
@@ -330,12 +368,27 @@ const Page = () => {
                 </div>
               </TabsContent>
             </Tabs>
-            </div> : <div><h1 className='text-center mt-20 text-2xl	text-bold capitalize text-primary md:text-3xl'>please deposite some money to track your expenses</h1>
-            <div className='flex justify-center mt-10'>
-            <Landmark size={80} color="#22c55e" />
-            </div>
-            </div>}
+            </div> : 
+            <div className=''>
+              <div className="grid gap-4 mb-10 md:grid-cols-2 lg:grid-cols-4">
+                <PlaceholderDashboardCard />
+                <PlaceholderDashboardCard />
+                <PlaceholderDashboardCard />
+                <PlaceholderDashboardCard />
+              </div>
+              <PlaceholderChart />
+              <div className='md:flex justify-center gap-2 mt-10'>
+                <div className='md:w-1/2'>
+                <PlaceholderChart />
+                </div>
+                <div className='md:w-1/2 mt-10 md:mt-0'>
+                <PlaceholderChart />
+                </div>
+              </div>
 
+            </div>
+            
+            }
           </div>
 
 
