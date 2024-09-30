@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import MiniFooter from '@/components/MiniFooter';
 import { Loader2 } from 'lucide-react';
 import ExpensesDialog from '@/components/ExpensesDialog';
 import { Total } from '../../../../../../../components/Total';
@@ -65,7 +66,9 @@ const Page = () => {
     const [balance, setBalance] = useState<string | number>(0);
     const [averageDailyExpense, setAverageDailyExpense] = useState(0);
     const [topCategory, setTopCategory] = useState("");
-    const [topIncome, setTopIncome] = useState("")
+    const [topIncome, setTopIncome] = useState("");
+    const [averageMonthlyIncome, setAverageMonthlyIncome] = useState(0)
+    const [averageMonthlyExpense, setAverageMonthlyExpense] = useState()
 
     let {workspaceId}  = useParams()
     
@@ -158,6 +161,10 @@ const Page = () => {
           const averageDailyExpense = currentWorkSpace?.expenses.filter((item: any) => !item.isDeleted).reduce((acc: number, expense: Expense) => acc + expense.amount, 0) / currentWorkSpace?.expenses.length;
           const rounded = Math.round(averageDailyExpense * 100) / 100;
           setAverageDailyExpense(rounded);
+
+          // get the monthly average
+          const averageMonthlyExpense = currentWorkSpace?.expenses.filter((item: any) => !item.isDeleted).reduce((acc: number, expense: Expense) => acc + expense.amount, 0) / 30;
+          // setAverageMonthlyExpense(averageMonthlyExpense);
           
           // Call the function to calculate the top category
           trackTopCategory(currentWorkSpace.expenses);
@@ -255,12 +262,6 @@ const Page = () => {
             <Tabs defaultValue="overview" className="space-y-4">
               <TabsList>
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="analytics" disabled>
-                  Analytics
-                </TabsTrigger>
-                <TabsTrigger value="notifications" disabled>
-                  Notifications
-                </TabsTrigger>
               </TabsList>
               <TabsContent value="overview" className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -339,6 +340,7 @@ const Page = () => {
 
 
         </div>
+        <MiniFooter />
       </>
   )
 }

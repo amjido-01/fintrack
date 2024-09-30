@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import MiniFooter from '@/components/MiniFooter'
 import { useSession } from "next-auth/react";
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -26,12 +27,13 @@ import {
 } from "@/components/ui/select"
 import { useParams } from "next/navigation"
 import { useToast } from "@/components/ui/use-toast"
-
+import DeleteWorkspace from '@/components/DeleteWorkspace'
 const currencies = ["AED", "USD", "NGN", "SAR", "QAR"]
 
 interface Workspace {
   workspaceName: string
   currency: string
+  id: string
 }
 
 const Page = () => {
@@ -40,8 +42,18 @@ const Page = () => {
   const [currency, setCurrency] = useState("")
   const [workspaceName, setWorkspaceName] = useState("")
   const [isSaving, setIsSaving] = useState(false)
+  
   const { toast } = useToast()
   const queryClient = useQueryClient()
+
+
+  const getWorkspaces = async () => {
+    const res = await axios.get(`/api/workspace`);
+    return res.data;
+  }
+
+  const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces', {type: "done"}], queryFn: getWorkspaces});
+  console.log(workspaces, "from setting")
 
   const userId = session?.user?.id
   const getWorkspace = async (): Promise<Workspace> => {
@@ -53,6 +65,9 @@ const Page = () => {
     queryKey: ['workspace', workspaceId],
     queryFn: getWorkspace,
   })
+
+  console.log(currentWorkSpace, "curr");
+
 
   useEffect(() => {
     if (currentWorkSpace) {
@@ -101,6 +116,7 @@ const Page = () => {
   if (currentError) return <div>An error occurred: {currentError.message}</div>
 
   return (
+
     <div className='container mx-auto px-4'>
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
@@ -112,8 +128,8 @@ const Page = () => {
       </div>
 
       <h1 className="text-3xl font-bold mt-4 mb-8">Workspace Settings</h1>
-      <div className='flex justify-center'>
-        <div className='md:w-1/2'>
+      <div className='flx justify-center'>
+        <div className='md:w-[70%] mx-auto'>
           <Card>
             <CardHeader>
               <CardTitle>General Settings</CardTitle>
@@ -154,6 +170,11 @@ const Page = () => {
           </Card>
         </div>
       </div>
+      <div className='flex justify-center mt-10'>
+          <DeleteWorkspace userWorkspace={workspaces} workspaceId={workspaceId as string} />
+        </div>
+
+        <MiniFooter />
     </div>
   )
 }

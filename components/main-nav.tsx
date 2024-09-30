@@ -37,7 +37,7 @@ export function MainNav({
             : "text-muted-foreground"
         )}
       >
-        Overview
+        Dashboard
       </Link>
     
       <Link

@@ -41,6 +41,9 @@ model Workspace {
   createdById   String
   expenses      Expense[]  // Relation to the Expense model
   income        Income[]
+  isDeleted   Boolean @default(false)
+  deletedAt   DateTime?
+  deletedBy   String?
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
   lastActiveAt  DateTime @default(now())

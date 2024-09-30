@@ -10,6 +10,7 @@ import {
     cardTitle: string;
     cardContent: number | string;
     cardIcon: React.ReactElement | string;
+    // stat: number
     // currency: string
   }
 export const DashboardCard: React.FC<DashboardCardProps> = ({cardTitle, 
@@ -31,9 +32,9 @@ export const DashboardCard: React.FC<DashboardCardProps> = ({cardTitle,
     </CardHeader>
     <CardContent>
       <div className="text-2xl font-bold">{cardContent}</div>
-      <p className="text-xs text-muted-foreground">
-        +20.1% from last month
-      </p>
+      {/* <p className="text-xs text-muted-foreground">
+        +{stat}% from last month
+      </p> */}
     </CardContent>
   </Card>
   )
