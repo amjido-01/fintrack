@@ -179,7 +179,7 @@ const Page = () => {
       const expenseLenght = currentWorkSpace?.expenses.filter((item: any) => !item.isDeleted).length;
 
     
-    if (isLoading) return  <div className="flex justify-center items-center h-screen">
+    if (isLoading) return  <div className="flex  text-primary justify-center items-center h-screen">
       <div className="flex flex-col items-center">
         <Loader2 className="h-6 w-6 animate-spin mb-2" />
         <p>Getting your workspace ready, please wait...</p>
@@ -269,31 +269,25 @@ function PlaceholderDashboardCard() {
 
           <div className="flex-1 space-y-4 p-8 pt-6 ">
 
-            <div className="flex flex-col justify-start md:flex-row md:items-center md:justify-between space-y-2">
+          <div className="flex flex-col justify-start md:flex-row md:items-center md:justify-between space-y-2">
 
-              <div className='flex flex-col md:flex-row md:items-center justify-between w-full mb-2 md:mb-0'>
+<div className='flex items-center  space-x-2 mb-2 md:mb-0'>
+<h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
 
-              <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+{hasIncome && <div>
+<ExpensesDialog userId={userId} workspaceId={workspaceId} />
+</div>}
 
-             <div>
-             {currentWorkSpace?.income.length  < 1 && <p>Please add income to start tracking your money.</p>}
-             </div>
+<div>
+  <IncomeDialog userId={userId} workspaceId={workspaceId}  
+  />
+</div>
+</div>
 
-              {hasIncome && <div>
-              <ExpensesDialog userId={userId} workspaceId={workspaceId} />
-              </div>
-              }
-
-              <div className='w-fit'>
-                <IncomeDialog userId={userId} workspaceId={workspaceId}  
-                />
-              </div>
-              </div>
-
-              <div className="flex items-center space-x-2 mt-2 md:mt-2">
-                {hasIncome && <CalendarDateRangePicker />}
-              </div>
-            </div>
+<div className="flex items-center space-x-2 mt-2 md:mt-2">
+  {hasIncome && <CalendarDateRangePicker />}
+</div>
+</div>
             
               {hasIncome ? 
             <div className=''>
