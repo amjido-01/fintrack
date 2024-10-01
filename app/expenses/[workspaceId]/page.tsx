@@ -119,6 +119,7 @@ const ExpensesPage = () => {
 
   const workspaceCurrency = data?.currency === "USD" ? "$" : data?.currency === "NGN" ? "₦" : data?.currency === "SAR" ? "ر.س" : data?.currency === "QAR" ? "ر.ق" : data?.currency === "AED" ? "د.إ" : "₦";
 
+
   // delete expense
   const deleteExpense = async (id: string) => {
     try {

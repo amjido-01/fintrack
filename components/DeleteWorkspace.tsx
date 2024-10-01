@@ -43,11 +43,9 @@ export default function DeleteWorkspace({workspaceId, userWorkspace}: DeleteWork
       // Simulating API call
       await axios.delete(`/api/workspac/${workspaceId}`)
       if (userWorkspace.length > 0) {
-        console.log("list")
         router.push(`/user/${userId}/workspaces`)
       } else {
         router.push(`/createworkspace`)
-        console.log("create")
       }
       toast({
         title: "Workspace deleted",

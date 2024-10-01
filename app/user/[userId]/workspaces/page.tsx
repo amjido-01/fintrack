@@ -1,16 +1,29 @@
 "use client";
 import React from 'react';
 import axios from 'axios';
+import { MainNav } from '@/components/main-nav';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { 
+  DropdownMenu
+  , DropdownMenuItem
+  , DropdownMenuSeparator
+  , DropdownMenuCheckboxItem
+  , DropdownMenuRadioGroup
+  , DropdownMenuContent,
+  DropdownMenuLabel
+  , DropdownMenuTrigger
+ } from '@/components/ui/dropdown-menu';
+import MiniFooter from '@/components/MiniFooter';
+import UserAvatar from '@/components/ui/UserAvatar';
 import Link from 'next/link';
 import { useSession } from "next-auth/react"
 import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader2, Plus, Briefcase } from "lucide-react"
+import { Loader2, Plus, Briefcase, Ellipsis, ChartSpline } from "lucide-react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 
 
@@ -39,11 +52,6 @@ const Page = () => {
         router.push('/createworkspace');
       }
 
-      const handleWorkspaceSelect = () => {
-        // /user/${workspace.createdById}/workspace/${workspace.workspaceName}/${workspace.id}/dashboard`
-        // router.push(`user/${userId}/workspace/${workspace.workspace}`)
-      }
-
       if (isLoading) {
         return (
             <div className="flex justify-center items-center h-screen">
@@ -58,8 +66,21 @@ const Page = () => {
       const filteredWorkspace = workspaces?.filter((workspace) => !workspace.isDeleted)
     
   return (
-    <div className="container mx-auto px-4 py-8">
-    <h1 className="text-3xl font-bold text-center mb-8">Select a Workspace</h1>
+    <div className="container mx-auto px-4">
+
+      <div className="border-b">
+        <div className="flex h-16 items-center px-4">
+          {/* <MainNav userId={userId} 
+          workspaceName={currentWorkSpace?.workspaceName} 
+          workspaceId={workspaceId as string} 
+          /> */}
+          <div className="ml-auto flex items-center space-x-4">
+            <UserAvatar />
+          </div>
+        </div>
+      </div>
+
+    <h1 className="text-3xl font-bold my-8">Select a Workspace</h1>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {filteredWorkspace.map((workspace) => (
         <motion.div key={workspace.id}>
@@ -67,9 +88,28 @@ const Page = () => {
           <Card className="cursor-pointer hover:shadow-lg transition-shadow duration-300" 
           >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-xl">
+              <CardTitle className="flex justify-between items-center">
+                <div className='flex items-center gap-2 text-xl'> 
                 <Briefcase className="h-5 w-5 text-primary" />
                 {workspace.workspaceName}
+                </div>
+
+                
+                <DropdownMenu>
+               <DropdownMenuTrigger asChild>
+                <Ellipsis className='h-5 w-5' />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className=" w-24">
+                  <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Link href={`/setting/${workspace.id}`}>
+                      Setting
+                      </Link>
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+                </DropdownMenu>
+
               </CardTitle>
               <CardDescription>Created on {new Date(workspace.createdAt).toLocaleDateString()}</CardDescription>
             </CardHeader>
@@ -96,62 +136,10 @@ const Page = () => {
         </Card>
       </motion.div>
     </div>
+
+    <MiniFooter />
   </div>
   )
 }
 
 export default Page
-
-
-
-
-
-
-
-
-// export default function WorkspaceSelection() {
- 
-
-//   const fetchWorkspaces = async (): Promise<Workspace[]> => {
-//     const res = await axios.get(`/api/workspaces/${userId}`)
-//     return res.data
-//   }
-
-//   const { data: workspaces, isLoading, error } = useQuery<Workspace[], Error>({
-//     queryKey: ['workspaces', userId],
-//     queryFn: fetchWorkspaces,
-//   })
-
-//   useEffect(() => {
-//     if (workspaces && workspaces.length === 0) {
-//       router.push('/create-workspace')
-//     }
-//   }, [workspaces, router])
-
-//   const handleWorkspaceSelect = (workspaceId: string) => {
-//     router.push(`/workspace/${workspaceId}`)
-//   }
-
-//   const handleCreateNewWorkspace = () => {
-//     router.push('/create-workspace')
-//   }
-
-
-
-//   if (error) {
-//     toast({
-//       title: "Error",
-//       description: "Failed to load workspaces. Please try again.",
-//       variant: "destructive",
-//     })
-//     return null
-//   }
-
-//   if (!workspaces || workspaces.length === 0) {
-//     return null 
-//   }
-
-//   return (
-//    null
-//   )
-// }

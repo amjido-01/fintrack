@@ -51,6 +51,17 @@ export function MainNav({
       >
         Settings
       </Link>
+      <Link
+        href={`/user/${userId}/workspaces`} //(`/user/${userId}/workspaces`)
+        className={cn(
+          "text-sm font-medium transition-colors hover:text-primary",
+          isActive(`/user/${userId}/workspaces`)
+            ? "text-primary"
+            : "text-muted-foreground"
+        )}
+      >
+        Workspaces
+      </Link>
     </nav>
   )
 }

@@ -73,7 +73,6 @@ const IncomeDialog: React.FC<Expense> = ({userId, workspaceId,
           workspaceId,
           userId
         })
-        console.log(response.data)
         if (response.data && !response.data.error) {
           setAlertTitle('Income Added Successfully');
           setAlertMessage('Your new income has been added successfully.');

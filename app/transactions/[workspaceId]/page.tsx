@@ -1,9 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import Popover from "@/components/Popover";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Toggle } from "@/components/ui/toggle";
 import { Ellipsis } from "lucide-react";
 import { Edit2Icon, DeleteIcon } from "lucide-react";
@@ -106,6 +105,18 @@ const Page = () => {
         return res.data;
       };
 
+      useEffect(() => {
+        if (!isEditFormOpen) {
+          setIncomeSource('');
+          setAmount(undefined);
+          setCategory(categories[0]);
+          setDate('');
+          setDescription('');
+          setSelectedIncome(null);
+          setSelectedTransactionId(null);
+        }
+      }, [isEditFormOpen]);
+
     
       const { data, isLoading, error, refetch: refetchCurrentWorkspace } = useQuery<
         any,
@@ -143,7 +154,7 @@ const Page = () => {
       };
 
         // edit function
-        const editIncome = async (id: string, updatedIncome: Income) => {
+        const editIncome = async (id: string, updatedIncome: Income): Promise<void> => {
           try {
             await axios.put(`/api/income/${id}`, updatedIncome);
             queryClient.invalidateQueries({
@@ -155,6 +166,7 @@ const Page = () => {
           }
         }
   
+       
 
       const handleDeletePopover = (id: string) => {
         setSelectedTransactionId(id);
@@ -164,10 +176,38 @@ const Page = () => {
     
       const handleEditPopover = (income: Income) => {
         setSelectedTransactionId(income?.id);
-        setSelectedIncome(income)
+        setSelectedIncome(income);
+        setIncomeSource(income.incomeSource);
+        setAmount(income.amount);
+        setCategory(income.category);
+        setDate(income.date.split('T')[0]);
+        setDescription(income.description);
         setIsEditDialogOpen(true);
       };
 
+
+      const mutation = useMutation({
+        mutationFn: ({ id, updatedIncome }: { id: string; updatedIncome: Partial<Income> }) => 
+          axios.put(`/api/income/${id}`, updatedIncome),
+        onSuccess: () => {
+          refetchCurrentWorkspace();
+          queryClient.invalidateQueries({
+            queryKey: ['workspace', workspaceId, { type: "done" }]
+          });
+          toast({
+            title: "Income updated",
+            description: "Your income has been updated successfully.",
+          });
+        },
+        onError: (error: Error) => {
+          console.error("Error editing income:", error);
+          toast({
+            title: "Error",
+            description: `An error occurred while updating income: ${error.message}`,
+            variant: "destructive",
+          });
+        }
+      });
       // Handle the delete confirmation popover
 
       const handleDeleteConfirmation = () => {
@@ -186,28 +226,53 @@ const Page = () => {
 
       const handleEditSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedTransactionId || !selectedIncome) return;
+      
+        if (!selectedTransactionId || !selectedIncome) {
+          toast({
+            title: "Error",
+            description: "No transaction selected for update.",
+            variant: "destructive",
+          });
+          return;
+        }
       
         setLoading(true);
       
         const updatedIncome = {
-          ...selectedIncome,
-          incomeSource,
-          amount,
-          category,
-          date,
-          description,
+          incomeSource: incomeSource || selectedIncome.incomeSource,
+          amount: amount ?? selectedIncome.amount,
+          category: category || selectedIncome.category,
+          date: date || selectedIncome.date,
+          description: description || selectedIncome.description,
         };
       
-        try {
-          await editIncome(selectedTransactionId, updatedIncome);
-          setIsEditFormOpen(false);
-          setLoading(false);
-          refetchCurrentWorkspace(); // Fetch updated data after saving
-        } catch (error) {
-          console.error("Error saving income:", error);
-          setLoading(false);
-        }
+        console.log("Updating income:", updatedIncome);
+      
+        mutation.mutate(
+          { id: selectedTransactionId, updatedIncome },
+          {
+            onSuccess: (data) => {
+              console.log("Update successful:", data);
+              setIsEditFormOpen(false);
+              toast({
+                title: "Success",
+                description: "Income has been successfully updated.",
+              });
+              refetchCurrentWorkspace();
+            },
+            onError: (error: any) => {
+              console.error("Update failed:", error);
+              toast({
+                title: "Error",
+                description: `Failed to update income: ${error.message}`,
+                variant: "destructive",
+              });
+            },
+            onSettled: () => {
+              setLoading(false);
+            },
+          }
+        );
       };
       
 
@@ -329,43 +394,38 @@ if (error) return <div className="flex justify-center items-center h-screen">
 
     
   <Dialog open={isEditFormOpen} onOpenChange={setIsEditFormOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Transaction</DialogTitle>
-          </DialogHeader>
-          <form  className="space-y-4">
-      {/* {error && <div style={{ color: 'red' }}>{error}</div>} */}
-    <div>
-      <Label htmlFor="name">Income Source</Label>
-      <Input
-        id="incomeSource"
-        type="text"
-        name='incomeSource'
-        value={incomeSource || selectedIncome?.incomeSource || ""}
-        onChange={(e) => setIncomeSource(e.target.value)}
-        placeholder="e.g., Salary, Freelance, Gift"
-        className="mt-1"
-      />
-      {/* {error && <p className="text-red-500 text-sm mt-1">{error}</p>} */}
-    </div>
-    <div className="mt-1">
-      <Label htmlFor="amount">Amount</Label>
-      <Input
-        id="amount"
-        type="number"
-        name='amount'
-        value={amount || selectedIncome?.amount || ""}
-        onChange={(e) =>  setAmount(Number(e.target.value))}
-        placeholder="Enter amount"
-        className="mt-1"
-      />
-      {/* {error && <p className="text-red-500 text-sm mt-1">{error}</p>} */}
-    </div>
-    <div className="mt-1">
+  <DialogContent>
+    <DialogHeader>
+      <DialogTitle>Edit Transaction</DialogTitle>
+    </DialogHeader>
+    <form onSubmit={handleEditSave} className="space-y-4">
+  <div>
+    <Label htmlFor="incomeSource">Income Source</Label>
+    <Input
+      id="incomeSource"
+      type="text"
+      value={incomeSource || ""}
+      onChange={(e) => setIncomeSource(e.target.value)}
+      placeholder="e.g., Salary, Freelance, Gift"
+      className="mt-1"
+    />
+  </div>
+  <div className="mt-1">
+    <Label htmlFor="amount">Amount</Label>
+    <Input
+      id="amount"
+      type="number"
+      value={amount || ""}
+      onChange={(e) => setAmount(Number(e.target.value))}
+      placeholder="Enter amount"
+      className="mt-1"
+    />
+  </div>
+  <div className="mt-1">
     <Label htmlFor="category">Category</Label>
-      <Select value={category || selectedIncome?.category || categories[0]} onValueChange={(value) => setCategory(value)}>
+    <Select value={category || categories[0]} onValueChange={setCategory}>
       <SelectTrigger>
-      <SelectValue placeholder="Select a category" />
+        <SelectValue placeholder="Select a category" />
       </SelectTrigger>
       <SelectContent>
         {categories.map((cat) => (
@@ -374,31 +434,41 @@ if (error) return <div className="flex justify-center items-center h-screen">
           </SelectItem>
         ))}
       </SelectContent>
-      </Select>
-    </div>
-
-   
-
-    <div className="mt-1">
-      {/* date picker */}
-      <label htmlFor="date">Date</label>
-      <input type="date" id="date" name="date" value={date || selectedIncome?.date || ""} onChange={(e) => setDate(e.target.value)} />
-    </div>
-
-    <div className="mt-1">
-    <Label htmlFor="description">Description </Label>
-    <Textarea value={description || selectedIncome?.description || ""} onChange={(e) => setDescription(e.target.value)} className='mt-1' name='description' required placeholder="Optional additional notes." id="note" />
+    </Select>
   </div>
-    <div className="mt-6">
-      {loading? <Button className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600" disabled>
-      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-      Please wait
-    </Button> : <Button type="submit" className="w-full px-6 py-3 text-sm font-medium tracking-wide capitalize transition-colors duration-300 transform rounded-lg focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 bg-green-500 text-white hover:bg-green-600"> Add Income </Button>}
-
-    </div>
-  </form>
-        </DialogContent>
-      </Dialog>
+  <div className="mt-1">
+    <Label htmlFor="date">Date</Label>
+    <Input
+      id="date"
+      type="date"
+      value={date || ""}
+      onChange={(e) => setDate(e.target.value)}
+      className="mt-1"
+    />
+  </div>
+  <div className="mt-1">
+    <Label htmlFor="description">Description</Label>
+    <Textarea
+      id="description"
+      value={description || ""}
+      onChange={(e) => setDescription(e.target.value)}
+      placeholder="Description"
+      className="mt-1"
+    />
+  </div>
+  <Button className="text-white" type="submit" disabled={loading}>
+    {loading ? (
+      <>
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        Saving...
+      </>
+    ) : (
+      "Save"
+    )}
+  </Button>
+    </form>
+  </DialogContent>
+</Dialog>
 
     </div>
   )

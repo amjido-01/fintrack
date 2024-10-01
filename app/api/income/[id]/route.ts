@@ -29,7 +29,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         const { id } = params;
         const body = await req.json();
 
-        const { incomeSource, date, amount, category, note } = body;
+        console.log("updating from the server")
+
+        const { incomeSource, date, amount, category, description } = body;
 
         const updatedIncome = await prisma.income.update({
             where: { id },
@@ -38,7 +40,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
                 date: new Date(date),
                 amount: parseFloat(amount),
                 category,
-                // description
+                description
             }
         })
         return NextResponse.json(updatedIncome, { status: 200 });

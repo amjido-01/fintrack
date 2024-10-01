@@ -8,6 +8,7 @@ import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useSession } from "next-auth/react";
+import { useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Popover from '@/components/Popover';
 // import { useQuery } from '@tanstack/react-query';
@@ -29,6 +30,7 @@ const workspaceSchema = z.object({
 const currencies = ["AED", "USD", "NGN", "SAR", "QAR"]
 const Page = () => {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [alertTitle, setAlertTitle] = useState('')
     const [alertMessage, setAlertMessage] = useState('')
@@ -94,6 +96,9 @@ const Page = () => {
             setCurrency("")
             setLoading(false);
             setIsDialogOpen(true);
+            queryClient.invalidateQueries({
+              queryKey:['workspaces', workspaceId, {type: "done"}]
+            })
           } else {
             setErrors(response.data.error || 'Workspace creation failed');
           }

@@ -123,6 +123,7 @@ const Page = () => {
   return (
 
     <div className='container mx-auto px-4'>
+
       <div className="border-b">
         <div className="flex h-16 items-center px-4">
           <MainNav userId={userId} workspaceName={currentWorkSpace?.workspaceName} workspaceId={workspaceId as string} />

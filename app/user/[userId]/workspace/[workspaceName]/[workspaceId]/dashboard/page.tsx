@@ -83,7 +83,7 @@ const Page = () => {
       return res.data;
     }
   
-    const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces', {type: "done"}], queryFn: getWorkspaces});
+    const {data: workspaces, isLoading, error, refetch} = useQuery({queryKey: ['workspaces', workspaceId, {type: "done"}], queryFn: getWorkspaces});
 
     const {data: currentWorkSpace, isLoading:currentLoading, error:currentError, refetch:refetchCurrentWorkspace} = useQuery(
       {queryKey: ['workspace', workspaceId, {type: "done"}], queryFn: getWorkspace});
@@ -260,7 +260,7 @@ function PlaceholderDashboardCard() {
              
               <div className="ml-auto flex items-center space-x-4">
               <div><ModeToggle /></div>
-                {hasIncome && <Search />}
+                {/* {hasIncome && <Search />} */}
                 <UserAvatar />
               </div>
             </div>
