@@ -64,7 +64,10 @@ const HoverSpring = () => {
               key={project.id}
               className="mt-5 text-left border-2 p-4 rounded-md"
             >
+              <div className='flex items-center w-12 h-12 justify-center rounded-full bg-primary/10'> 
                 {project.icon}
+              </div>
+                
                 <div className="mb-1 text-sm font-medium text-gray-900 dark:text-gray-100">
                   {project.name}
                 </div>

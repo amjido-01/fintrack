@@ -93,14 +93,6 @@ const ExpensesPage = () => {
   const [customCategory, setCustomCategory] = useState("")
   const [note, setNote] = useState("")
 
-  // const [editExpense, setEditExpense] = useState<Partial<Expense>>({
-  //   id: "",
-  //   expenseName: "",
-  //   amount: 0,
-  //   date: "",
-  //   category: "",
-  //   note: "",
-  // });
 
   const userId = session?.user?.id;
 
